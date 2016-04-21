@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using EnvDTE;
+using Microsoft.Build.Evaluation;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace MsBuildTaskExplorer
@@ -14,21 +12,29 @@ namespace MsBuildTaskExplorer
     {
         private DTE _dte;
         private SolutionEvents _solutionEvents;
+        private string _solutionPath;
 
         public bool IsOpen { get; private set; }
 
         public void Initialize()
         {
             _dte = TaskExplorerWindowCommand.Instance.ServiceProvider.GetService(typeof(SDTE)) as DTE;
-            IsOpen = _dte.Solution.IsOpen;
             if (_dte == null)
                 throw new InvalidOperationException("Solution info cannot be loaded");
+            UpdateState();
+
             _solutionEvents = _dte.Events.SolutionEvents;
             _solutionEvents.Opened += () =>
             {
-                IsOpen = _dte.Solution.IsOpen;
+                UpdateState();
                 SolutionOpened?.Invoke(this);
             };
+        }
+
+        private void UpdateState()
+        {
+            IsOpen = _dte.Solution.IsOpen;
+            _solutionPath = Path.GetDirectoryName(_dte.Solution.FullName);
         }
 
         public IEnumerable<MsBuildTask> GetMsBuildTasks()
@@ -38,30 +44,32 @@ namespace MsBuildTaskExplorer
             if (!IsOpen)
                 throw new InvalidOperationException("Solution is closed");
 
-            var path = Path.GetDirectoryName(_dte.Solution.FullName);
-            return GetMsBuildTasks(new DirectoryInfo(path));
+            return GetMsBuildTasks(new DirectoryInfo(_solutionPath));
         }
 
         private IEnumerable<MsBuildTask> GetMsBuildTasks(DirectoryInfo directory)
         {
             var tasks = directory.GetDirectories()
-                .Aggregate(Enumerable.Empty<MsBuildTask>(),
-                    (current, dir) => current.Union(GetMsBuildTasks(dir)));
+                .Aggregate(new List<MsBuildTask>(),
+                    (current, dir) =>
+                    {
+                        current.AddRange(GetMsBuildTasks(dir));
+                        return current;
+                    });
 
             var projFiles = directory.GetFiles("*.*proj");
-            return tasks.Union(projFiles.Select(projFile => BuildMsBuildTask(projFile.FullName)));
+            tasks.AddRange(projFiles.Select(projFile => BuildMsBuildTask(projFile.FullName)));
+            return tasks;
         }
 
         private MsBuildTask BuildMsBuildTask(string filePath)
         {
-            var doc = XDocument.Load(filePath);
-            var targets = new List<string>();
-            foreach (var target in doc.Root.Descendants().Where(x => x.Name.LocalName == "Target")) //can be refactored if the perfonamce issuies
-            {
-                var nameAttribute = target.Attributes().SingleOrDefault(a => a.Name == "Name");
-                if (nameAttribute != null)
-                    targets.Add(nameAttribute.Value);
-            }
+            var project = ProjectCollection.GlobalProjectCollection.LoadProject(filePath);
+            var targets = project.Targets.Values
+                .Where(t => t.Location.File.StartsWith(_solutionPath)
+                            || t.Name == "Build" || t.Name == "Clean" || t.Name == "Rebuild")
+                .Select(t => t.Name);
+            ProjectCollection.GlobalProjectCollection.UnloadProject(project);
             return new MsBuildTask(filePath, targets);
         }
 

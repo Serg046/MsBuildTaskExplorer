@@ -12,31 +12,29 @@
         <ImageBrush x:Key="AddButtonImageBrush" ImageSource="Resources/RunTarget.png" Stretch="UniformToFill"/>
     </UserControl.Resources>-->
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="12">
-            <TreeView Name="TasksItemsControl" BorderThickness="0" Background="Transparent">
-                <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Targets}">
-                        <TextBlock Margin="0,6" Text="{Binding FilePath}"/>
-                        <HierarchicalDataTemplate.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Click="RunButtonOnClick" Height="16" Width="16">
-                                        <Image Source="pack://application:,,,/MsBuildTaskExplorer;component/Resources/RunTarget.png"/></Button>
-                                    <TextBlock Margin="6,8,0,6" Text="{Binding}"></TextBlock>
-                                </StackPanel>
-                            </DataTemplate>
-                        </HierarchicalDataTemplate.ItemTemplate>
-                    </HierarchicalDataTemplate>
-                </TreeView.ItemTemplate>
-                <TreeView.ItemContainerStyle>
-                    <Style TargetType="{x:Type TreeViewItem}">
-                        <Setter Property="Background" Value="{x:Null}" />
-                        <Setter Property="BorderBrush" Value="{x:Null}" />
-                        <Setter Property="Focusable" Value="False" />
-                    </Style>
-                </TreeView.ItemContainerStyle>
-            </TreeView>
-        </ScrollViewer>
+        <TreeView Name="TasksItemsControl" BorderThickness="0" Background="Transparent">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Targets}">
+                    <TextBlock Margin="0,6" Text="{Binding FilePath}"/>
+                    <HierarchicalDataTemplate.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Click="RunButtonOnClick" Height="16" Width="16">
+                                    <Image Source="pack://application:,,,/MsBuildTaskExplorer;component/Resources/RunTarget.png"/></Button>
+                                <TextBlock Margin="6,8,0,6" Text="{Binding}"></TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </HierarchicalDataTemplate.ItemTemplate>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="Background" Value="{x:Null}" />
+                    <Setter Property="BorderBrush" Value="{x:Null}" />
+                    <Setter Property="Focusable" Value="False" />
+                </Style>
+            </TreeView.ItemContainerStyle>
+        </TreeView>
     </Grid>
 </UserControl>
 

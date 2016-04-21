@@ -13,14 +13,14 @@ namespace MsBuildTaskExplorer
 
         public MsBuildTask(string filePath, IEnumerable<string> targets)
         {
-            _targets = targets;
             FilePath = filePath;
+            _targets = targets.OrderBy(t => t);
         }
 
         public string FilePath { get; }
         public Func<string,bool> Filter { get; set; }
 
-        public IEnumerable<string> Targets => Filter != null
+        public IEnumerable<string> Targets => _targets != null && Filter != null
             ? _targets.Where(Filter)
             : _targets;
     }
