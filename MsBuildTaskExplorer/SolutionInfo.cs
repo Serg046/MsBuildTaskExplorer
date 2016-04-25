@@ -34,7 +34,7 @@ namespace MsBuildTaskExplorer
         private void UpdateState()
         {
             IsOpen = _dte.Solution.IsOpen;
-            _solutionPath = Path.GetDirectoryName(_dte.Solution.FullName);
+            _solutionPath = IsOpen ? Path.GetDirectoryName(_dte.Solution.FullName) : null;
         }
 
         public IEnumerable<MsBuildTask> GetMsBuildTasks()
