@@ -187,7 +187,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\RunTarget.png" />
+    <Resource Include="Resources\RunTarget.png" />
     <Content Include="Resources\TaskExplorerWindowCommand.png" />
     <Content Include="Resources\TaskExplorerWindowPackage.ico" />
     <VSCTCompile Include="TaskExplorerWindowPackage.vsct">
