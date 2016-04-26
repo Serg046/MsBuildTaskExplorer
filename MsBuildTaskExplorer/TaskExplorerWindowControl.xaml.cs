@@ -70,7 +70,10 @@ namespace MsBuildTaskExplorer
         private BuildParameters CreateBuildParameters()
         {
             var projectCollection = new ProjectCollection();
-            var buildParameters = new BuildParameters(projectCollection) { Loggers = new List<ILogger>() { new MsBuildLogger() } };
+            var buildParameters = new BuildParameters(projectCollection)
+            {
+                Loggers = new List<ILogger>() { new MsBuildLogger(_solutionInfo.WriteOutputLine) }
+            };
             return buildParameters;
         }
 

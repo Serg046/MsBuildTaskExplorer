@@ -11,6 +11,13 @@ namespace MsBuildTaskExplorer
 {
     internal class MsBuildLogger : Logger
     {
+        private readonly Action<string> _writeOutputAction;
+
+        public MsBuildLogger(Action<string> writeOutputAction)
+        {
+            _writeOutputAction = writeOutputAction;
+        }
+
         public override void Initialize(IEventSource eventSource)
         {
             eventSource.ProjectStarted += EventSourceOnProjectStarted;
@@ -23,32 +30,32 @@ namespace MsBuildTaskExplorer
 
         private void EventSourceOnProjectStarted(object sender, ProjectStartedEventArgs projectStartedEventArgs)
         {
-            Debug.WriteLine("ProjectStarted: " + projectStartedEventArgs.Message);
+            _writeOutputAction("ProjectStarted: " + projectStartedEventArgs.Message);
         }
 
         private void EventSourceOnTaskStarted(object sender, TaskStartedEventArgs taskStartedEventArgs)
         {
-            Debug.WriteLine("TaskStarted: " + taskStartedEventArgs.Message);
+            _writeOutputAction("TaskStarted: " + taskStartedEventArgs.Message);
         }
 
         private void EventSourceOnMessageRaised(object sender, BuildMessageEventArgs buildMessageEventArgs)
         {
-            Debug.WriteLine(buildMessageEventArgs.Message);
+            _writeOutputAction(buildMessageEventArgs.Message);
         }
 
         private void EventSourceOnWarningRaised(object sender, BuildWarningEventArgs buildWarningEventArgs)
         {
-            Debug.WriteLine("Warning: " + buildWarningEventArgs.Message);
+            _writeOutputAction("Warning: " + buildWarningEventArgs.Message);
         }
 
         private void EventSourceOnErrorRaised(object sender, BuildErrorEventArgs buildErrorEventArgs)
         {
-            Debug.WriteLine("Error: " + buildErrorEventArgs.Message);
+            _writeOutputAction("Error: " + buildErrorEventArgs.Message);
         }
 
         private void EventSourceOnProjectFinished(object sender, ProjectFinishedEventArgs projectFinishedEventArgs)
         {
-            Debug.WriteLine("ProjectFinished: " + projectFinishedEventArgs.Message);
+            _writeOutputAction("ProjectFinished: " + projectFinishedEventArgs.Message);
         }
     }
 }
