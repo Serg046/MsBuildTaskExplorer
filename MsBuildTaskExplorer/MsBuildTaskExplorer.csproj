@@ -187,6 +187,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Refresh.png" />
     <Resource Include="Resources\RunTarget.png" />
     <Content Include="Resources\TaskExplorerWindowCommand.png" />
     <Content Include="Resources\TaskExplorerWindowPackage.ico" />

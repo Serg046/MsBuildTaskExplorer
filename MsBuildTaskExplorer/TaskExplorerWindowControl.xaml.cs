@@ -83,5 +83,10 @@ namespace MsBuildTaskExplorer
             var buildRequest = new BuildRequestData(projFilePath, globalProperties, null, new[] { target }, null, BuildRequestDataFlags.ReplaceExistingProjectInstance);
             return buildRequest;
         }
+
+        private void RefreshButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            UpdateTaskList();
+        }
     }
 }
