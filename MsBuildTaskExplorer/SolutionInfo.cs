@@ -55,6 +55,11 @@ namespace MsBuildTaskExplorer
                 UpdateState();
                 SolutionOpened?.Invoke(this);
             };
+            _solutionEvents.AfterClosing += () =>
+            {
+                UpdateState();
+                SolutionClosed?.Invoke(this);
+            };
         }
 
         private void UpdateState()
@@ -104,8 +109,9 @@ namespace MsBuildTaskExplorer
             OutputWindow.OutputString(value + Environment.NewLine);
         }
 
-        public event SolutionOpenedEventHandler SolutionOpened;
+        public event SolutionEventHandler SolutionOpened;
+        public event SolutionEventHandler SolutionClosed;
     }
 
-    internal delegate void SolutionOpenedEventHandler(SolutionInfo solutionInfo);
+    internal delegate void SolutionEventHandler(SolutionInfo solutionInfo);
 }

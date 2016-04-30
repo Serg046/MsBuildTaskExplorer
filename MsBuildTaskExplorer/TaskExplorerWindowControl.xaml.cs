@@ -25,6 +25,7 @@ namespace MsBuildTaskExplorer
     public partial class TaskExplorerWindowControl : UserControl
     {
         private readonly SolutionInfo _solutionInfo = new SolutionInfo();
+        private bool _isInitialized;
 
         public TaskExplorerWindowControl()
         {
@@ -34,12 +35,17 @@ namespace MsBuildTaskExplorer
 
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            _solutionInfo.Initialize();
-            if (_solutionInfo.IsOpen && TasksItemsControl.ItemsSource == null)
+            if (!_isInitialized)
             {
-                UpdateTaskList();
+                _solutionInfo.Initialize();
+                if (_solutionInfo.IsOpen)
+                {
+                    UpdateTaskList();
+                }
+                _solutionInfo.SolutionOpened += info => UpdateTaskList();
+                _solutionInfo.SolutionClosed += info => TasksItemsControl.ItemsSource = null;
+                _isInitialized = true;
             }
-            _solutionInfo.SolutionOpened += info => UpdateTaskList();
         }
 
         private void UpdateTaskList()
