@@ -17,13 +17,24 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Button Grid.Row="0" Background="Transparent" HorizontalAlignment="Left" Click="RefreshButtonOnClick" Margin="12,12,0,0"
-                Visibility="{Binding ElementName=TasksItemsControl, Path=ItemsSource, Converter={StaticResource VisibleIfNotNullConverter}}">
-            <StackPanel Orientation="Horizontal" >
-                <Image Height="16" Width="16" Source="pack://application:,,,/MsBuildTaskExplorer;component/Resources/Refresh.png" />
-                <TextBlock Margin="2,0,6,0" Padding="0,1,0,0" Text="Refresh"/>
-            </StackPanel>
-        </Button>
+        <Grid Grid.Row="0" Margin="12,12,12,0"
+              Visibility="{Binding ElementName=TasksItemsControl, Path=ItemsSource, Converter={StaticResource VisibleIfNotNullConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="FilterTb" Height="{Binding ElementName=RefreshButton, Path=ActualHeight}" Grid.Column="0" Padding="16,1,0,0">
+                <TextBox.Background>
+                    <ImageBrush AlignmentX="Left" ImageSource="pack://application:,,,/MsBuildTaskExplorer;component/Resources/Filter.png" Stretch="None"/>
+                </TextBox.Background>
+            </TextBox>
+            <Button Grid.Column="1" Margin="6,0,0,0" Background="Transparent" x:Name="RefreshButton" HorizontalAlignment="Left" Click="RefreshButtonOnClick">
+                <StackPanel Orientation="Horizontal" >
+                    <Image Height="16" Width="16" Source="pack://application:,,,/MsBuildTaskExplorer;component/Resources/Refresh.png" />
+                    <TextBlock Margin="2,0,6,0" Padding="0,1,0,0" Text="Refresh"/>
+                </StackPanel>
+            </Button>
+        </Grid>
         <TreeView Margin="3,2,6,0" Grid.Row="1" Name="TasksItemsControl" BorderThickness="0" Background="Transparent">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Targets}">

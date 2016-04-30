@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
@@ -43,10 +44,17 @@ namespace MsBuildTaskExplorer
 
         private void UpdateTaskList()
         {
+            Func<string, bool> filter;
+            if (string.IsNullOrEmpty(FilterTb.Text))
+                filter = targetName => targetName != "EnsureNuGetPackageBuildImports";
+            else
+                filter = targetName => targetName != "EnsureNuGetPackageBuildImports"
+                && Regex.IsMatch(targetName, FilterTb.Text, RegexOptions.IgnoreCase);
+
             TasksItemsControl.ItemsSource = _solutionInfo.GetMsBuildTasks()
                 .Select(t =>
                 {
-                    t.Filter = targetName => targetName != "EnsureNuGetPackageBuildImports";
+                    t.Filter = filter;
                     return t;
                 })
                 .Where(t => t.Targets != null && t.Targets.Any())
