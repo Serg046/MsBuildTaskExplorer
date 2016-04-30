@@ -34,7 +34,7 @@ namespace MsBuildTaskExplorer
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
             _solutionInfo.Initialize();
-            if (_solutionInfo.IsOpen)
+            if (_solutionInfo.IsOpen && TasksItemsControl.ItemsSource == null)
             {
                 UpdateTaskList();
             }
