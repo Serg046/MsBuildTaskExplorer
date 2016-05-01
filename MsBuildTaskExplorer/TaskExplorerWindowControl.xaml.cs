@@ -58,27 +58,32 @@ namespace MsBuildTaskExplorer
                 })
                 .Where(t => t.Targets != null && t.Targets.Any())
                 .OrderBy(t => t.FilePath);
+            
+            ExpandTargetsIfRequired();
+        }
 
-            if (!string.IsNullOrEmpty(FilterTb.Text))
+        private void ExpandTargetsIfRequired()
+        {
+            var expandedTargets = Settings.Instance.ExpandedTargets;
+            if (!string.IsNullOrEmpty(expandedTargets))
             {
-                foreach (var item in TasksItemsControl.Items)
+                var targetPaths = expandedTargets.Split(new[] {SEPARATOR}, StringSplitOptions.None);
+                var itemsToExpand = TasksItemsControl.Items.Cast<object>()
+                    .Select(item => ((TreeViewItem)TasksItemsControl.ItemContainerGenerator.ContainerFromItem(item)))
+                    .Where(item => targetPaths.Contains(((MsBuildTask)item.DataContext).FilePath));
+                foreach (var treeViewItem in itemsToExpand)
                 {
-                    var dObject = TasksItemsControl.ItemContainerGenerator.ContainerFromItem(item);
-                    ((TreeViewItem)dObject).IsExpanded = true;
+                    treeViewItem.IsExpanded = true;
                 }
             }
             else
             {
-                var expandedTargets = Settings.Instance.ExpandedTargets;
-                if (!string.IsNullOrEmpty(expandedTargets))
+                if (!string.IsNullOrEmpty(FilterTb.Text))
                 {
-                    var targetPaths = expandedTargets.Split(new[] { SEPARATOR }, StringSplitOptions.None);
-                    var itemsToExpand = TasksItemsControl.Items.Cast<object>()
-                        .Select(item => ((TreeViewItem)TasksItemsControl.ItemContainerGenerator.ContainerFromItem(item)))
-                        .Where(item => targetPaths.Contains(((MsBuildTask)item.DataContext).FilePath));
-                    foreach (var treeViewItem in itemsToExpand)
+                    foreach (var item in TasksItemsControl.Items)
                     {
-                        treeViewItem.IsExpanded = true;
+                        var dObject = TasksItemsControl.ItemContainerGenerator.ContainerFromItem(item);
+                        ((TreeViewItem)dObject).IsExpanded = true;
                     }
                 }
             }
@@ -123,8 +128,7 @@ namespace MsBuildTaskExplorer
 
         private void SaveSettings()
         {
-            if (!string.IsNullOrEmpty(FilterTb.Text))
-                Settings.Instance.Filter = FilterTb.Text;
+            Settings.Instance.Filter = !string.IsNullOrEmpty(FilterTb.Text) ? FilterTb.Text : string.Empty;
             
             var expandedItems = TasksItemsControl.Items.Cast<object>()
                 .Select(item => ((TreeViewItem)TasksItemsControl.ItemContainerGenerator.ContainerFromItem(item)))
@@ -132,8 +136,7 @@ namespace MsBuildTaskExplorer
                 .Select(item => ((MsBuildTask)item.DataContext).FilePath)
                 .Where(path => !Regex.IsMatch(path, SEPARATOR))
                 .ToList();
-            if (expandedItems.Any())
-                Settings.Instance.ExpandedTargets = string.Join(SEPARATOR, expandedItems);
+            Settings.Instance.ExpandedTargets = expandedItems.Any() ? string.Join(SEPARATOR, expandedItems) : string.Empty;
         }
     }
 }
