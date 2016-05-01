@@ -55,6 +55,7 @@
     <Compile Include="MsBuildLogger.cs" />
     <Compile Include="MsBuildTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="SolutionInfo.cs" />
     <Compile Include="TaskExplorerWindow.cs" />
     <Compile Include="TaskExplorerWindowCommand.cs" />
