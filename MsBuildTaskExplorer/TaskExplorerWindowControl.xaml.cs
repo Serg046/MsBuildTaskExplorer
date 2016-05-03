@@ -138,5 +138,18 @@ namespace MsBuildTaskExplorer
                 .ToList();
             Settings.Instance.ExpandedTargets = expandedItems.Any() ? string.Join(SEPARATOR, expandedItems) : string.Empty;
         }
+
+        private void PrintAllPropsButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            var msBuildTask = (sender as FrameworkElement)
+                ?.FindVisualParent<TreeViewItem>()
+                ?.FindVisualParent<TreeViewItem>()
+                .DataContext as MsBuildTask;
+
+            foreach (var projectProperty in _solutionInfo.GetAllProperties(msBuildTask.FilePath).OrderBy(p => p.Name))
+            {
+                _solutionInfo.WriteOutputLine($"{projectProperty.Name} = {projectProperty.EvaluatedValue}");
+            }
+        }
     }
 }

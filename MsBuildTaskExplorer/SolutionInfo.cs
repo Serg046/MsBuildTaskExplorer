@@ -109,6 +109,14 @@ namespace MsBuildTaskExplorer
             OutputWindow.OutputString(value + Environment.NewLine);
         }
 
+        public IEnumerable<ProjectProperty> GetAllProperties(string projFilePath)
+        {
+            var project = ProjectCollection.GlobalProjectCollection.LoadProject(projFilePath);
+            var props = project.Properties;
+            ProjectCollection.GlobalProjectCollection.UnloadProject(project);
+            return props;
+        }
+
         public event SolutionEventHandler SolutionOpened;
         public event SolutionEventHandler SolutionClosed;
     }

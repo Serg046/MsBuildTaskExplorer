@@ -45,6 +45,9 @@
                                 <Button BorderThickness="0" Click="RunButtonOnClick" Background="Transparent">
                                     <Image Source="pack://application:,,,/MsBuildTaskExplorer;component/Resources/RunTarget.png" />
                                 </Button>
+                                <Button Margin="6,0,0,0" BorderThickness="0" Click="PrintAllPropsButtonOnClick"  Background="Transparent">
+                                    <Image Source="pack://application:,,,/MsBuildTaskExplorer;component/Resources/PrintAllProperties.png" />
+                                </Button>
                                 <TextBlock Margin="6,8,0,6" Text="{Binding}"></TextBlock>
                             </StackPanel>
                         </DataTemplate>

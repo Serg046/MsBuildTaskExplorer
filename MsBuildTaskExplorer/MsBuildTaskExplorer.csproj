@@ -191,6 +191,7 @@
     <Resource Include="Resources\Refresh.png" />
     <Resource Include="Resources\RunTarget.png" />
     <Resource Include="Resources\Filter.png" />
+    <Resource Include="Resources\PrintAllProperties.png" />
     <Content Include="Resources\TaskExplorerWindowCommand.png" />
     <Content Include="Resources\TaskExplorerWindowPackage.ico" />
     <VSCTCompile Include="TaskExplorerWindowPackage.vsct">
