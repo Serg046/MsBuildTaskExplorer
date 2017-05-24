@@ -5,7 +5,8 @@ using System.Linq;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.Build.Evaluation;
-using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.Build.Exceptions;
+using System.Text;
 
 namespace MsBuildTaskExplorer
 {
@@ -88,8 +89,25 @@ namespace MsBuildTaskExplorer
                         return current;
                     });
 
-            var projFiles = directory.GetFiles("*.*proj");
-            tasks.AddRange(projFiles.Select(projFile => BuildMsBuildTask(projFile.FullName)));
+            foreach (var projFile in directory.GetFiles("*.*proj"))
+            {
+                try
+                {
+                    tasks.Add(BuildMsBuildTask(projFile.FullName));
+                }
+                catch(InvalidProjectFileException ex)
+                {
+                    var errSb = new StringBuilder("Exception: ")
+                        .AppendLine(ex.GetType().FullName)
+                        .AppendLine($"The project \"{projFile.FullName}\" was not loaded.")
+                        .AppendLine(ex.Message);
+                    if (ex.StackTrace != null)
+                    {
+                        errSb.AppendLine("Stack trace:").Append(ex.StackTrace.ToString());
+                    }
+                    WriteOutputLine(errSb.ToString());
+                }
+            }
             return tasks;
         }
 
