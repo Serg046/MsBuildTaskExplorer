@@ -209,6 +209,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\Icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Preview.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Resource Include="Resources\Refresh.png" />
     <Resource Include="Resources\RunTarget.png" />
     <Resource Include="Resources\Filter.png" />
