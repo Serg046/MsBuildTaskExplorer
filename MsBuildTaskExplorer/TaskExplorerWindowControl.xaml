@@ -42,10 +42,11 @@
                     <HierarchicalDataTemplate.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" Margin="-18,0,0,0">
-                                <Button BorderThickness="0" Click="RunButtonOnClick" Background="Transparent">
+                                <Button BorderThickness="0" BorderBrush="Transparent" Click="RunButtonOnClick" Background="Transparent">
                                     <Image Source="pack://application:,,,/MsBuildTaskExplorer;component/Resources/RunTarget.png" />
                                 </Button>
-                                <Button Margin="6,0,0,0" BorderThickness="0" Click="PrintAllPropsButtonOnClick" ToolTip="Print All Properties" Background="Transparent">
+                                <Button Margin="6,0,0,0" BorderThickness="0" BorderBrush="Transparent" Click="PrintAllPropsButtonOnClick"
+                                        ToolTip="Print All Properties" Background="Transparent">
                                     <Image Source="pack://application:,,,/MsBuildTaskExplorer;component/Resources/PrintAllProperties.png" />
                                 </Button>
                                 <TextBlock Margin="6,8,0,6" Text="{Binding}"></TextBlock>
