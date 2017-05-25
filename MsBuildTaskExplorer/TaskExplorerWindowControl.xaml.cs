@@ -8,6 +8,7 @@ using Microsoft.Build.Framework;
 
 namespace MsBuildTaskExplorer
 {
+    using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
     public partial class TaskExplorerWindowControl : UserControl
@@ -41,11 +42,21 @@ namespace MsBuildTaskExplorer
             }
         }
 
-        private async void UpdateTaskList()
+        private void ShowProgressBar()
         {
             ProgressBar.IsIndeterminate = true;
             ProgressBar.Visibility = Visibility.Visible;
+        }
 
+        private void HideProgressBar()
+        {
+            ProgressBar.IsIndeterminate = false;
+            ProgressBar.Visibility = Visibility.Collapsed;
+        }
+
+        private async void UpdateTaskList()
+        {
+            ShowProgressBar();
             Func<string, bool> filter;
             if (string.IsNullOrEmpty(FilterTb.Text))
                 filter = targetName => targetName != "EnsureNuGetPackageBuildImports";
@@ -64,9 +75,7 @@ namespace MsBuildTaskExplorer
                 .OrderBy(t => t.FilePath);
             
             ExpandTargetsIfRequired();
-
-            ProgressBar.IsIndeterminate = false;
-            ProgressBar.Visibility = Visibility.Collapsed;
+            HideProgressBar();
         }
 
         private void ExpandTargetsIfRequired()
@@ -96,8 +105,9 @@ namespace MsBuildTaskExplorer
             }
         }
 
-        private void RunButtonOnClick(object sender, RoutedEventArgs e)
+        private async void RunButtonOnClick(object sender, RoutedEventArgs e)
         {
+            ShowProgressBar();
             var btn = (sender as FrameworkElement);
             var targetName = btn.DataContext.ToString();
             var currentTreeViewItem = btn.FindVisualParent<TreeViewItem>();
@@ -105,9 +115,10 @@ namespace MsBuildTaskExplorer
 
             using (var buildManager = new BuildManager())
             {
-                buildManager.Build(CreateBuildParameters(), CreateBuildRequest(msBuildTask.FilePath, targetName));
+                await Task.Run(() => buildManager.Build(CreateBuildParameters(),
+                    CreateBuildRequest(msBuildTask.FilePath, targetName)));
             }
-
+            HideProgressBar();
         }
 
         private BuildParameters CreateBuildParameters()
