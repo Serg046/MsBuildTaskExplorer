@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using Pri.LongPath;
 using System.Linq;
 using EnvDTE;
 using EnvDTE80;
