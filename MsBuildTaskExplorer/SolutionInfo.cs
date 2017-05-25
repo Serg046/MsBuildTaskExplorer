@@ -19,6 +19,8 @@ namespace MsBuildTaskExplorer
         private SolutionEvents _solutionEvents;
         private string _solutionPath;
         private OutputWindowPane _outputWindow;
+        public event SolutionEventHandler SolutionOpened;
+        public event SolutionEventHandler SolutionClosed;
 
         public bool IsOpen { get; private set; }
 
@@ -43,14 +45,14 @@ namespace MsBuildTaskExplorer
                 return _outputWindow;
             }
         }
-
+        
         public void Initialize()
         {
             _dte = TaskExplorerWindowCommand.Instance.ServiceProvider.GetService(typeof(DTE)) as DTE2;
             if (_dte == null)
                 throw new InvalidOperationException("Solution info cannot be loaded");
             UpdateState();
-
+            
             _solutionEvents = _dte.Events.SolutionEvents;
             _solutionEvents.Opened += () =>
             {
@@ -130,14 +132,19 @@ namespace MsBuildTaskExplorer
 
         public IEnumerable<ProjectProperty> GetAllProperties(string projFilePath)
         {
-            var project = ProjectCollection.GlobalProjectCollection.LoadProject(projFilePath);
+            var project = ProjectCollection.GlobalProjectCollection.LoadProject(projFilePath, GetGlobalProperties(), null);
             var props = project.Properties;
             ProjectCollection.GlobalProjectCollection.UnloadProject(project);
             return props;
         }
 
-        public event SolutionEventHandler SolutionOpened;
-        public event SolutionEventHandler SolutionClosed;
+        public Dictionary<string, string> GetGlobalProperties()
+        {
+            return new Dictionary<string, string>
+            {
+                ["Configuration"] = _dte.Solution.SolutionBuild.ActiveConfiguration.Name,
+            };
+        }
     }
 
     internal delegate void SolutionEventHandler(SolutionInfo solutionInfo);

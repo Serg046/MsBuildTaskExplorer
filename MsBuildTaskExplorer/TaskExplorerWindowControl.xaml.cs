@@ -123,19 +123,16 @@ namespace MsBuildTaskExplorer
 
         private BuildParameters CreateBuildParameters()
         {
-            var projectCollection = new ProjectCollection();
-            var buildParameters = new BuildParameters(projectCollection)
+            return new BuildParameters(new ProjectCollection())
             {
-                Loggers = new List<ILogger>() { new MsBuildLogger(_solutionInfo.WriteOutputLine) }
+                Loggers = new [] { new MsBuildLogger(_solutionInfo.WriteOutputLine) }
             };
-            return buildParameters;
         }
 
         private BuildRequestData CreateBuildRequest(string projFilePath, string target)
         {
-            var globalProperties = new Dictionary<string, string>();
-            var buildRequest = new BuildRequestData(projFilePath, globalProperties, null, new[] { target }, null, BuildRequestDataFlags.ReplaceExistingProjectInstance);
-            return buildRequest;
+            return new BuildRequestData(projFilePath, _solutionInfo.GetGlobalProperties(), null,
+                new[] { target }, null, BuildRequestDataFlags.ReplaceExistingProjectInstance);
         }
 
         private void RefreshButtonOnClick(object sender, RoutedEventArgs e)
