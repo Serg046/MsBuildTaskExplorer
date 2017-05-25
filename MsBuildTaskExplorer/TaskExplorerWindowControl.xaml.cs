@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
-using Microsoft.Build.Framework;
 
 namespace MsBuildTaskExplorer
 {
@@ -13,7 +11,7 @@ namespace MsBuildTaskExplorer
     using System.Windows.Controls;
     public partial class TaskExplorerWindowControl : UserControl
     {
-        private readonly SolutionInfo _solutionInfo = new SolutionInfo();
+        private SolutionInfo _solutionInfo;
         private bool _isInitialized;
         private const string SEPARATOR = "<`~`>";
 
@@ -31,7 +29,7 @@ namespace MsBuildTaskExplorer
                 var filter = Settings.Instance.Filter;
                 if (!string.IsNullOrEmpty(filter))
                     FilterTb.Text = filter;
-                _solutionInfo.Initialize();
+                _solutionInfo = new SolutionInfo();
                 if (_solutionInfo.IsOpen)
                 {
                     UpdateTaskList();

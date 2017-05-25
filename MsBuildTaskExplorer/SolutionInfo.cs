@@ -22,6 +22,11 @@ namespace MsBuildTaskExplorer
         public event SolutionEventHandler SolutionOpened;
         public event SolutionEventHandler SolutionClosed;
 
+        public SolutionInfo()
+        {
+            Initialize();
+        }
+
         public bool IsOpen { get; private set; }
 
         private OutputWindowPane OutputWindow
@@ -46,7 +51,7 @@ namespace MsBuildTaskExplorer
             }
         }
         
-        public void Initialize()
+        private void Initialize()
         {
             _dte = TaskExplorerWindowCommand.Instance.ServiceProvider.GetService(typeof(DTE)) as DTE2;
             if (_dte == null)
@@ -74,8 +79,6 @@ namespace MsBuildTaskExplorer
 
         public Task<IReadOnlyList<MsBuildTask>> GetMsBuildTasksAsync()
         {
-            if (_dte?.Solution == null)
-                throw new InvalidOperationException("SolutionInfo is not initialized");
             if (!IsOpen)
                 throw new InvalidOperationException("Solution is closed");
 
@@ -132,6 +135,9 @@ namespace MsBuildTaskExplorer
 
         public IEnumerable<ProjectProperty> GetAllProperties(string projFilePath)
         {
+            if (!IsOpen)
+                throw new InvalidOperationException("Solution is closed");
+
             var project = ProjectCollection.GlobalProjectCollection.LoadProject(projFilePath, GetGlobalProperties(), null);
             var props = project.Properties;
             ProjectCollection.GlobalProjectCollection.UnloadProject(project);
