@@ -41,8 +41,11 @@ namespace MsBuildTaskExplorer
             }
         }
 
-        private void UpdateTaskList()
+        private async void UpdateTaskList()
         {
+            ProgressBar.IsIndeterminate = true;
+            ProgressBar.Visibility = Visibility.Visible;
+
             Func<string, bool> filter;
             if (string.IsNullOrEmpty(FilterTb.Text))
                 filter = targetName => targetName != "EnsureNuGetPackageBuildImports";
@@ -50,7 +53,8 @@ namespace MsBuildTaskExplorer
                 filter = targetName => targetName != "EnsureNuGetPackageBuildImports"
                 && Regex.IsMatch(targetName, FilterTb.Text, RegexOptions.IgnoreCase);
 
-            TasksItemsControl.ItemsSource = _solutionInfo.GetMsBuildTasks()
+            var tasks = await _solutionInfo.GetMsBuildTasksAsync();
+            TasksItemsControl.ItemsSource = tasks
                 .Select(t =>
                 {
                     t.Filter = filter;
@@ -60,6 +64,9 @@ namespace MsBuildTaskExplorer
                 .OrderBy(t => t.FilePath);
             
             ExpandTargetsIfRequired();
+
+            ProgressBar.IsIndeterminate = false;
+            ProgressBar.Visibility = Visibility.Collapsed;
         }
 
         private void ExpandTargetsIfRequired()

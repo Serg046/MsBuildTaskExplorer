@@ -7,6 +7,7 @@ using EnvDTE80;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Exceptions;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MsBuildTaskExplorer
 {
@@ -69,17 +70,17 @@ namespace MsBuildTaskExplorer
             _solutionPath = IsOpen ? Path.GetDirectoryName(_dte.Solution.FullName) : null;
         }
 
-        public IEnumerable<MsBuildTask> GetMsBuildTasks()
+        public Task<IReadOnlyList<MsBuildTask>> GetMsBuildTasksAsync()
         {
             if (_dte?.Solution == null)
                 throw new InvalidOperationException("SolutionInfo is not initialized");
             if (!IsOpen)
                 throw new InvalidOperationException("Solution is closed");
 
-            return GetMsBuildTasks(new DirectoryInfo(_solutionPath));
+            return Task.Run(() => GetMsBuildTasks(new DirectoryInfo(_solutionPath)));
         }
 
-        private IEnumerable<MsBuildTask> GetMsBuildTasks(DirectoryInfo directory)
+        private IReadOnlyList<MsBuildTask> GetMsBuildTasks(DirectoryInfo directory)
         {
             var tasks = directory.GetDirectories()
                 .Aggregate(new List<MsBuildTask>(),
