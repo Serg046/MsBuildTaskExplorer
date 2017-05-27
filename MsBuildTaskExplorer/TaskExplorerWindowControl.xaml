@@ -39,7 +39,7 @@
                   Visibility="{Binding ElementName=TasksItemsControl, Path=ItemsSource, Converter={StaticResource VisibleIfNotNullConverter}}">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Targets}">
-                    <TextBlock Margin="0,6" Text="{Binding FilePath}"/>
+                    <TextBlock Margin="0,6" Text="{Binding RelativeFilePath}"/>
                     <HierarchicalDataTemplate.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" Margin="-18,0,0,0">

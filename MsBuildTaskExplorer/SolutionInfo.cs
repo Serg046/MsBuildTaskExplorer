@@ -117,15 +117,15 @@ namespace MsBuildTaskExplorer
             return tasks;
         }
 
-        private MsBuildTask BuildMsBuildTask(string filePath)
+        private MsBuildTask BuildMsBuildTask(string fullPath)
         {
-            var project = ProjectCollection.GlobalProjectCollection.LoadProject(filePath);
+            var project = ProjectCollection.GlobalProjectCollection.LoadProject(fullPath);
             var targets = project.Targets.Values
                 .Where(t => t.Location.File.StartsWith(_solutionPath)
                             || t.Name == "Build" || t.Name == "Clean" || t.Name == "Rebuild")
                 .Select(t => t.Name);
             ProjectCollection.GlobalProjectCollection.UnloadProject(project);
-            return new MsBuildTask(filePath, targets);
+            return new MsBuildTask(fullPath, fullPath.Replace(_solutionPath, string.Empty).TrimStart('\\'), targets);
         }
 
         public void WriteOutputLine(string value)

@@ -71,7 +71,7 @@ namespace MsBuildTaskExplorer
                     return t;
                 })
                 .Where(t => t.Targets != null && t.Targets.Any())
-                .OrderBy(t => t.FilePath);
+                .OrderBy(t => t.FullFilePath);
             
             ExpandTargetsIfRequired();
             HideProgressBar();
@@ -85,7 +85,7 @@ namespace MsBuildTaskExplorer
                 var targetPaths = expandedTargets.Split(new[] {SEPARATOR}, StringSplitOptions.None);
                 var itemsToExpand = TasksItemsControl.Items.Cast<object>()
                     .Select(item => ((TreeViewItem)TasksItemsControl.ItemContainerGenerator.ContainerFromItem(item)))
-                    .Where(item => targetPaths.Contains(((MsBuildTask)item.DataContext).FilePath));
+                    .Where(item => targetPaths.Contains(((MsBuildTask)item.DataContext).FullFilePath));
                 foreach (var treeViewItem in itemsToExpand)
                 {
                     treeViewItem.IsExpanded = true;
@@ -115,7 +115,7 @@ namespace MsBuildTaskExplorer
             using (var buildManager = new BuildManager())
             {
                 await Task.Run(() => buildManager.Build(CreateBuildParameters(),
-                    CreateBuildRequest(msBuildTask.FilePath, targetName)));
+                    CreateBuildRequest(msBuildTask.FullFilePath, targetName)));
             }
             HideProgressBar();
         }
@@ -136,8 +136,11 @@ namespace MsBuildTaskExplorer
 
         private void RefreshButtonOnClick(object sender, RoutedEventArgs e)
         {
-            SaveSettings();
-            UpdateTaskList();
+            if (_solutionInfo.IsOpen)
+            {
+                SaveSettings();
+                UpdateTaskList();
+            }
         }
 
         private void SaveSettings()
@@ -147,7 +150,7 @@ namespace MsBuildTaskExplorer
             var expandedItems = TasksItemsControl.Items.Cast<object>()
                 .Select(item => ((TreeViewItem)TasksItemsControl.ItemContainerGenerator.ContainerFromItem(item)))
                 .Where(item => item.IsExpanded)
-                .Select(item => ((MsBuildTask)item.DataContext).FilePath)
+                .Select(item => ((MsBuildTask)item.DataContext).FullFilePath)
                 .Where(path => !Regex.IsMatch(path, SEPARATOR))
                 .ToList();
             Settings.Instance.ExpandedTargets = expandedItems.Any() ? string.Join(SEPARATOR, expandedItems) : string.Empty;
@@ -160,7 +163,7 @@ namespace MsBuildTaskExplorer
                 ?.FindVisualParent<TreeViewItem>()
                 .DataContext as MsBuildTask;
 
-            foreach (var projectProperty in _solutionInfo.GetAllProperties(msBuildTask.FilePath).OrderBy(p => p.Name))
+            foreach (var projectProperty in _solutionInfo.GetAllProperties(msBuildTask.FullFilePath).OrderBy(p => p.Name))
             {
                 _solutionInfo.WriteOutputLine($"{projectProperty.Name} = {projectProperty.EvaluatedValue}");
             }
