@@ -77,6 +77,10 @@
                                         ToolTip="Print All Properties">
                                     <Image Source="pack://application:,,,/MsBuildTaskExplorer;component/Resources/PrintAllProperties.png" />
                                 </Button>
+                                <Button Margin="6,0,0,0" BorderThickness="0" BorderBrush="Transparent" Click="AbortOnClick"
+                                        ToolTip="Abort">
+                                    <Image Source="pack://application:,,,/MsBuildTaskExplorer;component/Resources/AbortTarget.png" />
+                                </Button>
                                 <TextBlock Margin="6,8,0,6" Text="{Binding}"></TextBlock>
                             </StackPanel>
                         </DataTemplate>

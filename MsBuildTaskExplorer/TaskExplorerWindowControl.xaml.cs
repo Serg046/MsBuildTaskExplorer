@@ -4,17 +4,19 @@ using System.Text.RegularExpressions;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
 using MsBuildTaskExplorer.AppSettings;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace MsBuildTaskExplorer
 {
-    using System.Threading.Tasks;
-    using System.Windows;
-    using System.Windows.Controls;
+    
     public partial class TaskExplorerWindowControl : UserControl
     {
+        private const string SEPARATOR = "<`~`>";
+
         private SolutionInfo _solutionInfo;
         private bool _isInitialized;
-        private const string SEPARATOR = "<`~`>";
 
         public TaskExplorerWindowControl()
         {
@@ -112,11 +114,9 @@ namespace MsBuildTaskExplorer
             var currentTreeViewItem = btn.FindVisualParent<TreeViewItem>();
             var msBuildTask = currentTreeViewItem.FindVisualParent<TreeViewItem>().DataContext as MsBuildTask;
 
-            using (var buildManager = new BuildManager())
-            {
-                await Task.Run(() => buildManager.Build(CreateBuildParameters(),
-                    CreateBuildRequest(msBuildTask.FullFilePath, targetName)));
-            }
+            await Task.Run(() => BuildManager.DefaultBuildManager.Build(CreateBuildParameters(),
+                CreateBuildRequest(msBuildTask.FullFilePath, targetName)));
+
             HideProgressBar();
         }
 
@@ -167,6 +167,11 @@ namespace MsBuildTaskExplorer
             {
                 _solutionInfo.WriteOutputLine($"{projectProperty.Name} = {projectProperty.EvaluatedValue}");
             }
+        }
+
+        private void AbortOnClick(object sender, RoutedEventArgs e)
+        {
+            BuildManager.DefaultBuildManager.CancelAllSubmissions();
         }
     }
 }
