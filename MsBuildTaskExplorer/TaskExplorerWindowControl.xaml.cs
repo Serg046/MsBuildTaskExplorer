@@ -14,6 +14,7 @@ namespace MsBuildTaskExplorer
     public partial class TaskExplorerWindowControl : UserControl
     {
         private const string SEPARATOR = "<`~`>";
+        private const string ENSURE_NUGET_PACKAGE_BUILD_IMPORTS = "EnsureNuGetPackageBuildImports";
 
         private SolutionInfo _solutionInfo;
         private bool _isInitialized;
@@ -60,9 +61,9 @@ namespace MsBuildTaskExplorer
             ShowProgressBar();
             Func<string, bool> filter;
             if (string.IsNullOrEmpty(FilterTb.Text))
-                filter = targetName => targetName != "EnsureNuGetPackageBuildImports";
+                filter = targetName => targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS;
             else
-                filter = targetName => targetName != "EnsureNuGetPackageBuildImports"
+                filter = targetName => targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS
                 && Regex.IsMatch(targetName, FilterTb.Text, RegexOptions.IgnoreCase);
 
             var tasks = await _solutionInfo.GetMsBuildTasksAsync();
@@ -74,6 +75,7 @@ namespace MsBuildTaskExplorer
                 })
                 .Where(t => t.Targets != null && t.Targets.Any())
                 .OrderBy(t => t.FullFilePath);
+            TasksItemsControl.UpdateLayout();
             
             ExpandTargetsIfRequired();
             HideProgressBar();
@@ -86,7 +88,7 @@ namespace MsBuildTaskExplorer
             {
                 var targetPaths = expandedTargets.Split(new[] {SEPARATOR}, StringSplitOptions.None);
                 var itemsToExpand = TasksItemsControl.Items.Cast<object>()
-                    .Select(item => ((TreeViewItem)TasksItemsControl.ItemContainerGenerator.ContainerFromItem(item)))
+                    .Select(item => (TreeViewItem)TasksItemsControl.ItemContainerGenerator.ContainerFromItem(item))
                     .Where(item => targetPaths.Contains(((MsBuildTask)item.DataContext).FullFilePath));
                 foreach (var treeViewItem in itemsToExpand)
                 {
@@ -109,7 +111,7 @@ namespace MsBuildTaskExplorer
         private async void RunButtonOnClick(object sender, RoutedEventArgs e)
         {
             ShowProgressBar();
-            var btn = (sender as FrameworkElement);
+            var btn = sender as FrameworkElement;
             var targetName = btn.DataContext.ToString();
             var currentTreeViewItem = btn.FindVisualParent<TreeViewItem>();
             var msBuildTask = currentTreeViewItem.FindVisualParent<TreeViewItem>().DataContext as MsBuildTask;
@@ -148,7 +150,7 @@ namespace MsBuildTaskExplorer
             Settings.Instance.Filter = !string.IsNullOrEmpty(FilterTb.Text) ? FilterTb.Text : string.Empty;
             
             var expandedItems = TasksItemsControl.Items.Cast<object>()
-                .Select(item => ((TreeViewItem)TasksItemsControl.ItemContainerGenerator.ContainerFromItem(item)))
+                .Select(item => (TreeViewItem)TasksItemsControl.ItemContainerGenerator.ContainerFromItem(item))
                 .Where(item => item.IsExpanded)
                 .Select(item => ((MsBuildTask)item.DataContext).FullFilePath)
                 .Where(path => !Regex.IsMatch(path, SEPARATOR))
