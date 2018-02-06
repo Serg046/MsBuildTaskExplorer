@@ -17,7 +17,7 @@ namespace MsBuildTaskExplorer
 
         private DTE2 _dte;
         private SolutionEvents _solutionEvents;
-        private string _solutionPath;
+        private string _solutionFolder;
         private OutputWindowPane _outputWindow;
         public event SolutionEventHandler SolutionOpened;
         public event SolutionEventHandler SolutionClosed;
@@ -74,7 +74,7 @@ namespace MsBuildTaskExplorer
         private void UpdateState()
         {
             IsOpen = _dte.Solution.IsOpen;
-            _solutionPath = IsOpen ? Path.GetDirectoryName(_dte.Solution.FullName) : null;
+            _solutionFolder = IsOpen ? Path.GetDirectoryName(_dte.Solution.FullName) : null;
         }
 
         public Task<IReadOnlyList<MsBuildTask>> GetMsBuildTasksAsync()
@@ -82,7 +82,7 @@ namespace MsBuildTaskExplorer
             if (!IsOpen)
                 throw new InvalidOperationException("Solution is closed");
 
-            return Task.Run(() => GetMsBuildTasks(new DirectoryInfo(_solutionPath)));
+            return Task.Run(() => GetMsBuildTasks(new DirectoryInfo(_solutionFolder)));
         }
 
         private IReadOnlyList<MsBuildTask> GetMsBuildTasks(DirectoryInfo directory)
@@ -121,11 +121,11 @@ namespace MsBuildTaskExplorer
         {
             var project = ProjectCollection.GlobalProjectCollection.LoadProject(fullPath);
             var targets = project.Targets.Values
-                .Where(t => t.Location.File.StartsWith(_solutionPath)
+                .Where(t => t.Location.File.StartsWith(_solutionFolder)
                             || t.Name == "Build" || t.Name == "Clean" || t.Name == "Rebuild")
                 .Select(t => t.Name);
             ProjectCollection.GlobalProjectCollection.UnloadProject(project);
-            return new MsBuildTask(fullPath, fullPath.Replace(_solutionPath, string.Empty).TrimStart('\\'), targets);
+            return new MsBuildTask(fullPath, fullPath.Replace(_solutionFolder, string.Empty).TrimStart('\\'), targets);
         }
 
         public void WriteOutputLine(string value)
@@ -146,9 +146,19 @@ namespace MsBuildTaskExplorer
 
         public Dictionary<string, string> GetGlobalProperties()
         {
+            var solutionDir = _solutionFolder;
+            if (!solutionDir.EndsWith('\\'))
+            {
+                solutionDir += "\\";
+            }
             return new Dictionary<string, string>
             {
                 ["Configuration"] = _dte.Solution.SolutionBuild.ActiveConfiguration.Name,
+                ["SolutionDir"] = solutionDir,
+                ["SolutionExt"] = Path.GetExtension(_dte.Solution.FileName),
+                ["SolutionFileName"] = Path.GetFileName(_dte.Solution.FileName),
+                ["SolutionName"] = Path.GetFileNameWithoutExtension(_dte.Solution.FileName),
+                ["SolutionPath"] = _dte.Solution.FullName
             };
         }
     }
