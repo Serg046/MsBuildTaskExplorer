@@ -22,12 +22,43 @@ namespace MsBuildTaskExplorer
         public event SolutionEventHandler SolutionOpened;
         public event SolutionEventHandler SolutionClosed;
 
+        private Properties.Settings _settings;
+
         public SolutionInfo()
         {
             Initialize();
+
+            if (_settings == null)
+                _settings = new Properties.Settings();
         }
 
         public bool IsOpen { get; private set; }
+
+        private string[] GetMaskFilesOfSetting
+        {
+            get
+            {
+                string[] maskFiles = default(string[]);
+                try
+                {
+                    maskFiles = _settings.setting_FileMaskPattern.Split(';');
+
+                }
+                catch (Exception ex)
+                {
+                    var errSb = new StringBuilder("Exception: ")
+                            .AppendLine(ex.GetType().FullName)
+                            .AppendLine($"The setting was not loaded.")
+                            .AppendLine(ex.Message);
+                    if (ex.StackTrace != null)
+                    {
+                        errSb.AppendLine("Stack trace:").Append(ex.StackTrace.ToString());
+                    }
+                    WriteOutputLine(errSb.ToString());
+                }
+                return maskFiles;
+            }
+        }
 
         private OutputWindowPane OutputWindow
         {
@@ -95,23 +126,26 @@ namespace MsBuildTaskExplorer
                         return current;
                     });
 
-            foreach (var projFile in directory.GetFiles("*.*proj"))
+            foreach (var mask in GetMaskFilesOfSetting)
             {
-                try
+                foreach (var projFile in directory.GetFiles(mask))
                 {
-                    tasks.Add(BuildMsBuildTask(projFile.FullName));
-                }
-                catch(InvalidProjectFileException ex)
-                {
-                    var errSb = new StringBuilder("Exception: ")
-                        .AppendLine(ex.GetType().FullName)
-                        .AppendLine($"The project \"{projFile.FullName}\" was not loaded.")
-                        .AppendLine(ex.Message);
-                    if (ex.StackTrace != null)
+                    try
                     {
-                        errSb.AppendLine("Stack trace:").Append(ex.StackTrace.ToString());
+                        tasks.Add(BuildMsBuildTask(projFile.FullName));
                     }
-                    WriteOutputLine(errSb.ToString());
+                    catch (InvalidProjectFileException ex)
+                    {
+                        var errSb = new StringBuilder("Exception: ")
+                            .AppendLine(ex.GetType().FullName)
+                            .AppendLine($"The project \"{projFile.FullName}\" was not loaded.")
+                            .AppendLine(ex.Message);
+                        if (ex.StackTrace != null)
+                        {
+                            errSb.AppendLine("Stack trace:").Append(ex.StackTrace.ToString());
+                        }
+                        WriteOutputLine(errSb.ToString());
+                    }
                 }
             }
             return tasks;
