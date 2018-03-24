@@ -25,7 +25,7 @@ namespace MsBuildTaskExplorer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("*.*proj;*.target")]
+        [global::System.Configuration.DefaultSettingValueAttribute("*.*proj;*.targets")]
         public string setting_FileMaskPattern {
             get {
                 return ((string)(this["setting_FileMaskPattern"]));
@@ -37,7 +37,7 @@ namespace MsBuildTaskExplorer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("*.*proj;*.target")]
+        [global::System.Configuration.DefaultSettingValueAttribute("*.*proj;*.targets")]
         public string setting_FileMaskPatternDefault {
             get {
                 return ((string)(this["setting_FileMaskPatternDefault"]));

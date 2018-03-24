@@ -3,10 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="setting_FileMaskPattern" Type="System.String" Scope="User">
-      <Value Profile="(Default)">*.*proj;*.target</Value>
+      <Value Profile="(Default)">*.*proj;*.targets</Value>
     </Setting>
     <Setting Name="setting_FileMaskPatternDefault" Type="System.String" Scope="User">
-      <Value Profile="(Default)">*.*proj;*.target</Value>
+      <Value Profile="(Default)">*.*proj;*.targets</Value>
     </Setting>
   </Settings>
 </SettingsFile>
