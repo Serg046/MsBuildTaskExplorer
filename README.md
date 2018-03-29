@@ -21,4 +21,4 @@ The add-in analyzes the solution folders to find MsBuild project files (.proj) t
 2. Set your extension by mask *.*extension
 
 ### Default extension
-*.proj and *.targets
+*.*proj and *.targets
