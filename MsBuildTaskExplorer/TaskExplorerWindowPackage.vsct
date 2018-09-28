@@ -30,12 +30,7 @@
     called "command set" and is used to group different command inside a logically related
     group; your package should define its own command set in order to avoid collisions
     with command ids defined by other packages. -->
-      <!--Setting-->
-      <Groups>
-          <Group guid="guidTaskExplorerMenuPackageCmdSet" id="TaskExplorerMenuCommandId" priority="0x0600">
-              <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
-          </Group>
-      </Groups>
+
     <!--Buttons section. -->
     <!--This section defines the elements the user can interact with, like a menu command or a button
         or combo box in a toolbar. -->
@@ -54,14 +49,6 @@
           <ButtonText>MsBuild Task Explorer</ButtonText>
         </Strings>
       </Button>
-        <!--Setting-->
-        <Button guid="guidTaskExplorerMenuPackageCmdSet" id="TaskExplorerMenuCommandId" priority="0x0100" type="Button">
-            <Parent guid="guidTaskExplorerMenuPackageCmdSet" id="TaskExplorerMenuCommandId" />
-            <Icon guid="guidImagesSetting" id="bmpPic1" />
-            <Strings>
-                <ButtonText>MsBuild Task Explorer setting</ButtonText>
-            </Strings>
-        </Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -71,9 +58,7 @@
             bitmap strip containing the bitmaps and then there are the numeric ids of the elements used
             inside a button definition. An important aspect of this declaration is that the element id
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
-      <Bitmap guid="guidImages" href="Resources\BuildQueue_16x.png" usedList="bmpPic1"/>
-        <!--Setting-->
-        <Bitmap guid="guidImagesSetting" href="Resources\SettingsGroup_16x.png" usedList="bmpPic1"/>
+      <Bitmap guid="guidImages" href="Resources\TaskExplorerWindowCommand.png" usedList="bmpPic1"/>
     </Bitmaps>
   </Commands>
 
@@ -89,18 +74,5 @@
     <GuidSymbol name="guidImages" value="{219301f2-5b4c-4a64-9030-5566217b7835}" >
       <IDSymbol name="bmpPic1" value="1" />
     </GuidSymbol>
-    
-      <!--Setting-->
-      <GuidSymbol name="guidTaskExplorerMenuPackage" value="{9999fa65-0468-4513-8f93-7ca72e16d8ab}" />
-
-      <!-- This is the guid used to group the menu commands together -->
-      <GuidSymbol name="guidTaskExplorerMenuPackageCmdSet" value="{68f9a7a3-2475-459e-b235-7a22073333d3}">
-          <IDSymbol name="TaskExplorerMenuCommandId" value="0x1020" />
-          <IDSymbol name="TaskExplorerMenuCommandId" value="0x0100" />
-      </GuidSymbol>
-
-      <GuidSymbol name="guidImagesSetting" value="{4665c6cd-60d3-4b15-b0e3-fd29c6bd6c3d}" >
-          <IDSymbol name="bmpPic1" value="1" />
-      </GuidSymbol>
   </Symbols>
 </CommandTable>

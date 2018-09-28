@@ -8,6 +8,7 @@ using Microsoft.Build.Evaluation;
 using Microsoft.Build.Exceptions;
 using System.Text;
 using System.Threading.Tasks;
+using MsBuildTaskExplorer.AppSettings;
 
 namespace MsBuildTaskExplorer
 {
@@ -22,43 +23,12 @@ namespace MsBuildTaskExplorer
         public event SolutionEventHandler SolutionOpened;
         public event SolutionEventHandler SolutionClosed;
 
-        private Properties.Settings _settings;
-
         public SolutionInfo()
         {
             Initialize();
-
-            if (_settings == null)
-                _settings = new Properties.Settings();
         }
 
         public bool IsOpen { get; private set; }
-
-        private string[] GetMaskFilesOfSetting
-        {
-            get
-            {
-                string[] maskFiles = default(string[]);
-                try
-                {
-                    maskFiles = _settings.setting_FileMaskPattern.Split(';');
-
-                }
-                catch (Exception ex)
-                {
-                    var errSb = new StringBuilder("Exception: ")
-                            .AppendLine(ex.GetType().FullName)
-                            .AppendLine($"The setting was not loaded.")
-                            .AppendLine(ex.Message);
-                    if (ex.StackTrace != null)
-                    {
-                        errSb.AppendLine("Stack trace:").Append(ex.StackTrace.ToString());
-                    }
-                    WriteOutputLine(errSb.ToString());
-                }
-                return maskFiles;
-            }
-        }
 
         private OutputWindowPane OutputWindow
         {
@@ -126,7 +96,7 @@ namespace MsBuildTaskExplorer
                         return current;
                     });
 
-            foreach (var mask in GetMaskFilesOfSetting)
+            foreach (var mask in Settings.Instance.SupportedFileExtensions.Split(';'))
             {
                 foreach (var projFile in directory.GetFiles(mask))
                 {

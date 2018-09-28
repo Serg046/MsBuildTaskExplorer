@@ -27,5 +27,7 @@ namespace MsBuildTaskExplorer.AppSettings
         public virtual string Filter { get; set; }
         [Setting]
         public virtual string ExpandedTargets { get; set; }
+        [Setting(Default = "*.*proj;*.targets")]
+        public virtual string SupportedFileExtensions { get; set; }
     }
 }

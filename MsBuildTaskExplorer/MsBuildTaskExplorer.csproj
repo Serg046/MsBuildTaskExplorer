@@ -80,17 +80,6 @@
     <Compile Include="AppSettings\SettingAttribute.cs" />
     <Compile Include="AppSettings\Settings.cs" />
     <Compile Include="AppSettings\SettingsStore.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="TaskExplorerSettingControl.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="TaskExplorerSettingControl.Designer.cs">
-      <DependentUpon>TaskExplorerSettingControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="SolutionInfo.cs" />
     <Compile Include="TaskExplorerWindow.cs" />
     <Compile Include="TaskExplorerWindowCommand.cs" />
@@ -104,10 +93,6 @@
     <None Include="Key.snk" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
@@ -235,7 +220,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\AbortTarget.png" />
-    <Content Include="Resources\BuildQueue_16x.png" />
     <Content Include="Resources\Icon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -253,9 +237,6 @@
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="TaskExplorerSettingControl.resx">
-      <DependentUpon>TaskExplorerSettingControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>

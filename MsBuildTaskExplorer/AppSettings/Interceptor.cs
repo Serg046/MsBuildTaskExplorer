@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Reflection;
 using Castle.DynamicProxy;
 
 namespace MsBuildTaskExplorer.AppSettings
@@ -22,6 +23,11 @@ namespace MsBuildTaskExplorer.AppSettings
                 if (propertyInfo.IsDefined(typeof(SettingAttribute), false))
                 {
                     invocation.ReturnValue = _settingsStore.Read(propertyInfo.PropertyType, propertyName);
+                    if (invocation.ReturnValue == null)
+                    {
+                        var attribute = propertyInfo.GetCustomAttribute<SettingAttribute>();
+                        invocation.ReturnValue = attribute.Default;
+                    }
                 }
             }
             else if (invocation.Method.Name.StartsWith("set_"))
