@@ -229,7 +229,7 @@
     <Resource Include="Resources\Filter.png" />
     <Resource Include="Resources\PrintAllProperties.png" />
     <Content Include="Resources\SettingsGroup_16x.png" />
-    <Content Include="Resources\TaskExplorerWindowCommand.png" />
+    <Content Include="Resources\Icon_16px.png" />
     <Content Include="Resources\TaskExplorerWindowPackage.ico" />
     <VSCTCompile Include="TaskExplorerWindowPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>

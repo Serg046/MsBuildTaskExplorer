@@ -43,7 +43,7 @@
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
       <Button guid="guidTaskExplorerWindowPackageCmdSet" id="TaskExplorerWindowCommandId" priority="0x0100" type="Button">
-        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_VIEW_ORG_WINDOWS"/>
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
           <ButtonText>MsBuild Task Explorer</ButtonText>
@@ -58,7 +58,7 @@
             bitmap strip containing the bitmaps and then there are the numeric ids of the elements used
             inside a button definition. An important aspect of this declaration is that the element id
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
-      <Bitmap guid="guidImages" href="Resources\TaskExplorerWindowCommand.png" usedList="bmpPic1"/>
+      <Bitmap guid="guidImages" href="Resources\Icon_16px.png" usedList="bmpPic1"/>
     </Bitmaps>
   </Commands>
 

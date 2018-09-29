@@ -14,7 +14,7 @@ The add-in analyzes the solution folders to find MsBuild project files (.proj) t
 
 ## Getting started
 1. Install [MsBuildTaskExplorer](https://marketplace.visualstudio.com/items?itemName=saaseev.MsBuildTaskExplorer).
-2. Click Visual Studio -> View -> Other Windows -> MsBuild Task Explorer.
+2. Click Visual Studio -> View -> MsBuild Task Explorer.
 
 ### Optional. Set your custom extension for search targets.
 1. Click Visual Studio -> Tool -> MsBuild Task Explorer setting
