@@ -56,29 +56,32 @@ namespace MsBuildTaskExplorer
             ProgressBar.Visibility = Visibility.Collapsed;
         }
 
-        private async void UpdateTaskList()
+        public async void UpdateTaskList()
         {
-            ShowProgressBar();
-            Func<string, bool> filter;
-            if (string.IsNullOrEmpty(FilterTb.Text))
-                filter = targetName => targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS;
-            else
-                filter = targetName => targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS
-                && Regex.IsMatch(targetName, FilterTb.Text, RegexOptions.IgnoreCase);
+            if (_solutionInfo.IsOpen)
+            {
+                ShowProgressBar();
+                Func<string, bool> filter;
+                if (string.IsNullOrEmpty(FilterTb.Text))
+                    filter = targetName => targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS;
+                else
+                    filter = targetName => targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS
+                                           && Regex.IsMatch(targetName, FilterTb.Text, RegexOptions.IgnoreCase);
 
-            var tasks = await _solutionInfo.GetMsBuildTasksAsync();
-            TasksItemsControl.ItemsSource = tasks
-                .Select(t =>
-                {
-                    t.Filter = filter;
-                    return t;
-                })
-                .Where(t => t.Targets != null && t.Targets.Any())
-                .OrderBy(t => t.FullFilePath);
-            TasksItemsControl.UpdateLayout();
-            
-            ExpandTargetsIfRequired();
-            HideProgressBar();
+                var tasks = await _solutionInfo.GetMsBuildTasksAsync();
+                TasksItemsControl.ItemsSource = tasks
+                    .Select(t =>
+                    {
+                        t.Filter = filter;
+                        return t;
+                    })
+                    .Where(t => t.Targets != null && t.Targets.Any())
+                    .OrderBy(t => t.FullFilePath);
+                TasksItemsControl.UpdateLayout();
+
+                ExpandTargetsIfRequired();
+                HideProgressBar();
+            }
         }
 
         private void ExpandTargetsIfRequired()
@@ -138,11 +141,8 @@ namespace MsBuildTaskExplorer
 
         private void RefreshButtonOnClick(object sender, RoutedEventArgs e)
         {
-            if (_solutionInfo.IsOpen)
-            {
-                SaveSettings();
-                UpdateTaskList();
-            }
+            SaveSettings();
+            UpdateTaskList();
         }
 
         private void SaveSettings()
@@ -174,6 +174,12 @@ namespace MsBuildTaskExplorer
         private void AbortOnClick(object sender, RoutedEventArgs e)
         {
             BuildManager.DefaultBuildManager.CancelAllSubmissions();
+        }
+
+        private void SettingsButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            MainControl.Visibility = Visibility.Collapsed;
+            SettingsControl.Visibility = Visibility.Visible;
         }
     }
 }

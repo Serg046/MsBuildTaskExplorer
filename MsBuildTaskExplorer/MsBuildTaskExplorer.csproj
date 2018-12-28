@@ -80,6 +80,9 @@
     <Compile Include="AppSettings\SettingAttribute.cs" />
     <Compile Include="AppSettings\Settings.cs" />
     <Compile Include="AppSettings\SettingsStore.cs" />
+    <Compile Include="SettingsWindowControl.xaml.cs">
+      <DependentUpon>SettingsWindowControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SolutionInfo.cs" />
     <Compile Include="TaskExplorerWindow.cs" />
     <Compile Include="TaskExplorerWindowCommand.cs" />
@@ -87,6 +90,7 @@
       <DependentUpon>TaskExplorerWindowControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="TaskExplorerWindowPackage.cs" />
+    <Compile Include="WindowUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -99,6 +103,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="SettingsWindowControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="TaskExplorerWindowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -228,7 +236,7 @@
     <Resource Include="Resources\RunTarget.png" />
     <Resource Include="Resources\Filter.png" />
     <Resource Include="Resources\PrintAllProperties.png" />
-    <Content Include="Resources\SettingsGroup_16x.png" />
+    <Resource Include="Resources\SettingsGroup_16x.png" />
     <Content Include="Resources\Icon_16px.png" />
     <Content Include="Resources\TaskExplorerWindowPackage.ico" />
     <VSCTCompile Include="TaskExplorerWindowPackage.vsct">
