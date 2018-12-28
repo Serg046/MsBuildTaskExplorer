@@ -8,6 +8,7 @@ using Microsoft.Build.Evaluation;
 using Microsoft.Build.Exceptions;
 using System.Text;
 using System.Threading.Tasks;
+using MsBuildTaskExplorer.AppSettings;
 
 namespace MsBuildTaskExplorer
 {
@@ -95,23 +96,26 @@ namespace MsBuildTaskExplorer
                         return current;
                     });
 
-            foreach (var projFile in directory.GetFiles("*.*proj"))
+            foreach (var mask in Settings.Instance.SupportedFileExtensions.Split(';'))
             {
-                try
+                foreach (var projFile in directory.GetFiles(mask))
                 {
-                    tasks.Add(BuildMsBuildTask(projFile.FullName));
-                }
-                catch(InvalidProjectFileException ex)
-                {
-                    var errSb = new StringBuilder("Exception: ")
-                        .AppendLine(ex.GetType().FullName)
-                        .AppendLine($"The project \"{projFile.FullName}\" was not loaded.")
-                        .AppendLine(ex.Message);
-                    if (ex.StackTrace != null)
+                    try
                     {
-                        errSb.AppendLine("Stack trace:").Append(ex.StackTrace.ToString());
+                        tasks.Add(BuildMsBuildTask(projFile.FullName));
                     }
-                    WriteOutputLine(errSb.ToString());
+                    catch (InvalidProjectFileException ex)
+                    {
+                        var errSb = new StringBuilder("Exception: ")
+                            .AppendLine(ex.GetType().FullName)
+                            .AppendLine($"The project \"{projFile.FullName}\" was not loaded.")
+                            .AppendLine(ex.Message);
+                        if (ex.StackTrace != null)
+                        {
+                            errSb.AppendLine("Stack trace:").Append(ex.StackTrace.ToString());
+                        }
+                        WriteOutputLine(errSb.ToString());
+                    }
                 }
             }
             return tasks;
