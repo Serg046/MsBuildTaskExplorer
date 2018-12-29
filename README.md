@@ -1,4 +1,7 @@
 # MsBuild Task Explorer
+
+[![Build status](https://ci.appveyor.com/api/projects/status/aq6wyq5n3d6fn0p3?svg=true)](https://ci.appveyor.com/project/Serg046/msbuildtaskexplorer) [![](https://vsmarketplacebadge.apphb.com/version-short/saaseev.MsBuildTaskExplorer.svg)](https://marketplace.visualstudio.com/items?itemName=saaseev.MsBuildTaskExplorer) [![](https://vsmarketplacebadge.apphb.com/installs-short/saaseev.MsBuildTaskExplorer.svg)](https://marketplace.visualstudio.com/items?itemName=saaseev.MsBuildTaskExplorer)
+
 Visual Studio Add-In for developers who would like to execute MsBuild targets inside Visual Studio.
 The add-in analyzes the solution folders to find MsBuild project files (.proj) to get targets and then lists it to provide ability to execute them.
 
