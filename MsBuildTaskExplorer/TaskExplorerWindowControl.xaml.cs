@@ -114,6 +114,7 @@ namespace MsBuildTaskExplorer
         private async void RunButtonOnClick(object sender, RoutedEventArgs e)
         {
             ShowProgressBar();
+            _solutionInfo.ShowOutputWindow();
             var btn = sender as FrameworkElement;
             var targetName = btn.DataContext.ToString();
             var currentTreeViewItem = btn.FindVisualParent<TreeViewItem>();
@@ -160,6 +161,7 @@ namespace MsBuildTaskExplorer
 
         private void PrintAllPropsButtonOnClick(object sender, RoutedEventArgs e)
         {
+            _solutionInfo.ShowOutputWindow();
             var msBuildTask = (sender as FrameworkElement)
                 ?.FindVisualParent<TreeViewItem>()
                 ?.FindVisualParent<TreeViewItem>()
@@ -173,6 +175,7 @@ namespace MsBuildTaskExplorer
 
         private void AbortOnClick(object sender, RoutedEventArgs e)
         {
+            _solutionInfo.ShowOutputWindow();
             BuildManager.DefaultBuildManager.CancelAllSubmissions();
         }
 

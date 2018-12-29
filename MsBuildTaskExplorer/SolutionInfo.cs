@@ -165,6 +165,12 @@ namespace MsBuildTaskExplorer
                 ["SolutionPath"] = _dte.Solution.FullName
             };
         }
+
+        public void ShowOutputWindow()
+        {
+            OutputWindow.Activate();
+            _dte.ToolWindows.OutputWindow.Parent.SetFocus();
+        }
     }
 
     internal delegate void SolutionEventHandler(SolutionInfo solutionInfo);
