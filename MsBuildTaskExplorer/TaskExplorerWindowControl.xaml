@@ -59,7 +59,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <ProgressBar x:Name="ProgressBar" IsIndeterminate="False" Height="2" VerticalAlignment="Top" Visibility="Collapsed" />
+            <ProgressBar x:Name="ProgressBar" IsIndeterminate="False" Height="1" VerticalAlignment="Top" Visibility="Collapsed" Background="Transparent" BorderThickness="0" />
             <Grid Grid.Row="0" Margin="12,12,12,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
