@@ -8,7 +8,6 @@ using Microsoft.Build.Evaluation;
 using Microsoft.Build.Exceptions;
 using System.Text;
 using System.Threading.Tasks;
-using MsBuildTaskExplorer.AppSettings;
 
 namespace MsBuildTaskExplorer
 {

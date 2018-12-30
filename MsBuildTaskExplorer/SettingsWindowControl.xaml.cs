@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using MsBuildTaskExplorer.AppSettings;
 
 namespace MsBuildTaskExplorer
 {

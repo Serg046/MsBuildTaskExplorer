@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
-using MsBuildTaskExplorer.AppSettings;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;

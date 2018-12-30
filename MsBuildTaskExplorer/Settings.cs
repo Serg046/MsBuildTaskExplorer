@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.Settings;
+﻿using AopSettings;
+using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell.Settings;
+using SettingsStore = AopSettings.SettingsStore;
 
-namespace MsBuildTaskExplorer.AppSettings
+namespace MsBuildTaskExplorer
 {
     public class Settings
     {
@@ -14,11 +16,9 @@ namespace MsBuildTaskExplorer.AppSettings
             if (!userSettingsStore.CollectionExists(COLLECTION_PATH))
                 userSettingsStore.CreateCollection(COLLECTION_PATH);
 
-            var settingsStore = new SettingsStore();
-            settingsStore.RegisterReader<string>(name => userSettingsStore.GetString(COLLECTION_PATH, name, null));
-            settingsStore.RegisterWriter<string>((name, value) => userSettingsStore.SetString(COLLECTION_PATH, name, value));
-
-            Instance = AopSettings.Create(new Settings(), settingsStore);
+            var provider = new SettingsStoreProvider(userSettingsStore);
+            var settingStore = new SettingsStore(provider);
+            Instance = AopSettingsFactory.Create<Settings>(settingStore);
         }
 
         public static Settings Instance { get; }
