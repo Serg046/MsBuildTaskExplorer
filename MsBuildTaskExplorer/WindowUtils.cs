@@ -7,9 +7,10 @@ namespace MsBuildTaskExplorer
     {
         public static T GetVisualParent<T>(this DependencyObject element) where T : DependencyObject
         {
-            while (element != null && !(element is T))
+            do
+            {
                 element = VisualTreeHelper.GetParent(element);
-
+            } while (element != null && !(element is T));
             return (T)element;
         }
 

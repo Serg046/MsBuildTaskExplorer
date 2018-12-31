@@ -116,8 +116,8 @@ namespace MsBuildTaskExplorer
             _solutionInfo.ShowOutputWindow();
             var btn = sender as FrameworkElement;
             var targetName = btn.DataContext.ToString();
-            var currentTreeViewItem = btn.FindVisualParent<TreeViewItem>();
-            var msBuildTask = currentTreeViewItem.FindVisualParent<TreeViewItem>().DataContext as MsBuildTask;
+            var currentTreeViewItem = btn.GetVisualParent<TreeViewItem>();
+            var msBuildTask = currentTreeViewItem.GetVisualParent<TreeViewItem>().DataContext as MsBuildTask;
 
             await Task.Run(() => BuildManager.DefaultBuildManager.Build(CreateBuildParameters(),
                 CreateBuildRequest(msBuildTask.FullFilePath, targetName)));
@@ -162,8 +162,8 @@ namespace MsBuildTaskExplorer
         {
             _solutionInfo.ShowOutputWindow();
             var msBuildTask = (sender as FrameworkElement)
-                ?.FindVisualParent<TreeViewItem>()
-                ?.FindVisualParent<TreeViewItem>()
+                ?.GetVisualParent<TreeViewItem>()
+                ?.GetVisualParent<TreeViewItem>()
                 .DataContext as MsBuildTask;
 
             var properties = _solutionInfo.GetAllProperties(msBuildTask.FullFilePath);

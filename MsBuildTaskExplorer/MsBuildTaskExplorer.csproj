@@ -71,7 +71,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Extensions.cs" />
     <Compile Include="MsBuildLogger.cs" />
     <Compile Include="MsBuildTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
