@@ -166,9 +166,17 @@ namespace MsBuildTaskExplorer
                 ?.FindVisualParent<TreeViewItem>()
                 .DataContext as MsBuildTask;
 
-            foreach (var projectProperty in _solutionInfo.GetAllProperties(msBuildTask.FullFilePath).OrderBy(p => p.Name))
+            var properties = _solutionInfo.GetAllProperties(msBuildTask.FullFilePath);
+            if (properties == null || properties.Count == 0)
             {
-                _solutionInfo.WriteOutputLine($"{projectProperty.Name} = {projectProperty.EvaluatedValue}");
+                _solutionInfo.WriteOutputLine("There is no any property");
+            }
+            else
+            {
+                foreach (var projectProperty in properties.OrderBy(p => p.Name))
+                {
+                    _solutionInfo.WriteOutputLine($"{projectProperty.Name} = {projectProperty.EvaluatedValue}");
+                }
             }
         }
 

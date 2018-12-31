@@ -136,7 +136,7 @@ namespace MsBuildTaskExplorer
             OutputWindow.OutputString(value + Environment.NewLine);
         }
 
-        public IEnumerable<ProjectProperty> GetAllProperties(string projFilePath)
+        public ICollection<ProjectProperty> GetAllProperties(string projFilePath)
         {
             if (!IsOpen)
                 throw new InvalidOperationException("Solution is closed");
