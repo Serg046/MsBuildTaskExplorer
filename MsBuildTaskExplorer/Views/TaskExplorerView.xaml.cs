@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace MsBuildTaskExplorer
+namespace MsBuildTaskExplorer.Views
 {
     
-    public partial class TaskExplorerWindowControl : UserControl
+    public partial class TaskExplorerView : UserControl
     {
         private const string SEPARATOR = "<`~`>";
         private const string ENSURE_NUGET_PACKAGE_BUILD_IMPORTS = "EnsureNuGetPackageBuildImports";
@@ -18,7 +18,7 @@ namespace MsBuildTaskExplorer
         private SolutionInfo _solutionInfo;
         private bool _isInitialized;
 
-        public TaskExplorerWindowControl()
+        public TaskExplorerView()
         {
             this.InitializeComponent();
             Loaded += OnLoaded;
