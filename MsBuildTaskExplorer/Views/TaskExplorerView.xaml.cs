@@ -6,6 +6,8 @@ using Microsoft.Build.Execution;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using AopInpc;
+using MsBuildTaskExplorer.ViewModels;
 
 namespace MsBuildTaskExplorer.Views
 {
@@ -21,7 +23,8 @@ namespace MsBuildTaskExplorer.Views
         public TaskExplorerView()
         {
             this.InitializeComponent();
-            Loaded += OnLoaded;
+            DataContext = AopInpcFactory.Create<TaskExplorerViewModel>();
+            //Loaded += OnLoaded;
             Unloaded += (sender, args) => SaveSettings();
         }
 
@@ -45,14 +48,14 @@ namespace MsBuildTaskExplorer.Views
 
         private void ShowProgressBar()
         {
-            ProgressBar.IsIndeterminate = true;
-            ProgressBar.Visibility = Visibility.Visible;
+            //ProgressBar.IsIndeterminate = true;
+            //ProgressBar.Visibility = Visibility.Visible;
         }
 
         private void HideProgressBar()
         {
-            ProgressBar.IsIndeterminate = false;
-            ProgressBar.Visibility = Visibility.Collapsed;
+            //ProgressBar.IsIndeterminate = false;
+            //ProgressBar.Visibility = Visibility.Collapsed;
         }
 
         public async void UpdateTaskList()
@@ -112,6 +115,7 @@ namespace MsBuildTaskExplorer.Views
 
         private async void RunButtonOnClick(object sender, RoutedEventArgs e)
         {
+            RefreshButton.Command = null;
             ShowProgressBar();
             _solutionInfo.ShowOutputWindow();
             var btn = sender as FrameworkElement;

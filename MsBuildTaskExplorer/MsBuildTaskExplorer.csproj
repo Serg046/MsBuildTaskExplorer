@@ -76,6 +76,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SettingsStoreProvider.cs" />
+    <Compile Include="ViewModels\AsyncLambdaCommand.cs" />
+    <Compile Include="ViewModels\MsBuildTargetViewModel.cs" />
+    <Compile Include="ViewModels\MsBuildTaskViewModel.cs" />
+    <Compile Include="ViewModels\TaskExplorerViewModel.cs" />
     <Compile Include="Views\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
@@ -109,6 +113,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="AopInpc, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AopInpc.1.0.3\lib\net40\AopInpc.dll</HintPath>
+    </Reference>
     <Reference Include="AopSettings, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AopSettings.1.0.0.1\lib\net40\AopSettings.dll</HintPath>
     </Reference>
@@ -126,6 +133,9 @@
     </Reference>
     <Reference Include="EnvDTE90, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="EventBinder, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EventBinder.1.1.0\lib\net40\EventBinder.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Framework" />
