@@ -8,9 +8,9 @@ namespace MsBuildTaskExplorer
     {
         private readonly IEnumerable<string> _targets;
 
-        public MsBuildTask(string filePath, string relativeFilePath, IEnumerable<string> targets)
+        public MsBuildTask(string fullFilePath, string relativeFilePath, IEnumerable<string> targets)
         {
-            FullFilePath = filePath;
+            FullFilePath = fullFilePath;
             RelativeFilePath = relativeFilePath;
             _targets = targets.OrderBy(t => t);
         }
