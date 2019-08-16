@@ -79,7 +79,9 @@
     <Compile Include="ViewModels\AsyncLambdaCommand.cs" />
     <Compile Include="ViewModels\MsBuildTargetViewModel.cs" />
     <Compile Include="ViewModels\MsBuildTaskViewModel.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\TaskExplorerViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelFactory.cs" />
     <Compile Include="Views\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>

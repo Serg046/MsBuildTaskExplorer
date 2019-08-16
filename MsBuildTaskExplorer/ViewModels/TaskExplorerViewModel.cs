@@ -18,12 +18,12 @@ namespace MsBuildTaskExplorer.ViewModels
 
         private SolutionInfo _solutionInfo;
         private bool _isInitialized;
-        private Visibility _progressBarVisibility;
+        private bool _isTargetRunning;
 
         public TaskExplorerViewModel()
         {
             Tasks = new ObservableCollection<MsBuildTaskViewModel>();
-            ProgressBarVisibility = Visibility.Collapsed;
+            SettingsViewModel = ViewModelFactory.Create<SettingsViewModel>(this);
             Initialize = new AsyncLambdaCommand(async () =>
             {
                 if (!_isInitialized)
@@ -37,6 +37,7 @@ namespace MsBuildTaskExplorer.ViewModels
                     _solutionInfo.SolutionClosed += info => Tasks.Clear();
                     _isInitialized = true;
                 }
+                ProgressBarVisibility = Visibility.Collapsed;
             });
             Refresh = new AsyncLambdaCommand(async () =>
             {
@@ -45,13 +46,18 @@ namespace MsBuildTaskExplorer.ViewModels
             });
             ExecuteTask = new AsyncLambdaCommand<MsBuildTargetViewModel>(async (vm) =>
             {
-                ProgressBarVisibility = Visibility.Visible;
-                _solutionInfo.ShowOutputWindow();
+                if (!_isTargetRunning)
+                {
+                    _isTargetRunning = true;
+                    ProgressBarVisibility = Visibility.Visible;
+                    _solutionInfo.ShowOutputWindow();
 
-                await Task.Run(() => BuildManager.DefaultBuildManager.Build(CreateBuildParameters(),
-                    CreateBuildRequest(vm.Parent.FullFilePath, vm.Target)));
+                    await Task.Run(() => BuildManager.DefaultBuildManager.Build(CreateBuildParameters(),
+                        CreateBuildRequest(vm.Parent.FullFilePath, vm.Target)));
 
-                ProgressBarVisibility = Visibility.Collapsed;
+                    ProgressBarVisibility = Visibility.Collapsed;
+                    _isTargetRunning = false;
+                }
             });
             PrintAllProps = new AsyncLambdaCommand<MsBuildTargetViewModel>((vm) =>
             {
@@ -82,32 +88,31 @@ namespace MsBuildTaskExplorer.ViewModels
         [Inpc]
         public virtual string Filter { get; set; }
 
-        [Inpc]
         public virtual ObservableCollection<MsBuildTaskViewModel> Tasks { get; }
 
         [Inpc]
-        public virtual Visibility ProgressBarVisibility
-        {
-            get => _progressBarVisibility;
-            private set
-            {
-                _progressBarVisibility = value;
-                RaisePropertyChanged(nameof(ProgressBarIsIndeterminate));
-            }
-        }
+        public virtual Visibility ProgressBarVisibility { get; set; }
 
         [Inpc]
-        public virtual bool ProgressBarIsIndeterminate => ProgressBarVisibility == Visibility.Visible;
+        public virtual Visibility MainViewVisibility { get; set; }
+
+        public SettingsViewModel SettingsViewModel { get; }
 
         public virtual AsyncLambdaCommand Initialize { get; }
+        public virtual Action Unload => () => SaveSettings();
         public virtual AsyncLambdaCommand Refresh { get; }
         public virtual AsyncLambdaCommand<MsBuildTargetViewModel> ExecuteTask { get; }
         public virtual AsyncLambdaCommand<MsBuildTargetViewModel> PrintAllProps { get; }
         public virtual AsyncLambdaCommand AbortTask { get; }
+        public Action OpenSettings => () =>
+        {
+            MainViewVisibility = Visibility.Collapsed;
+            SettingsViewModel.SettingsViewVisibility = Visibility.Visible;
+        };
 
         public async Task UpdateTaskList()
         {
-            if (_solutionInfo.IsOpen)
+            if (_solutionInfo?.IsOpen == true)
             {
                 ProgressBarVisibility = Visibility.Visible;
                 Func<string, bool> filter;
@@ -128,7 +133,7 @@ namespace MsBuildTaskExplorer.ViewModels
                 foreach (var task in orderedTasks)
                 {
                     task.Filter = filter;
-                    var taskViewModel = AopInpcFactory.Create<MsBuildTaskViewModel>(task, this);
+                    var taskViewModel = ViewModelFactory.Create<MsBuildTaskViewModel>(task, this);
                     if (expandedTargets?.Length > 0)
                     {
                         if (expandedTargets.Contains(taskViewModel.FullFilePath))
@@ -149,11 +154,14 @@ namespace MsBuildTaskExplorer.ViewModels
 
         private void SaveSettings()
         {
-            Settings.Instance.Filter = !string.IsNullOrEmpty(Filter) ? Filter : string.Empty;
+            if (_solutionInfo?.IsOpen == true)
+            {
+                Settings.Instance.Filter = !string.IsNullOrEmpty(Filter) ? Filter : string.Empty;
 
-            var expandedItems = Tasks.Where(t => t.IsExpanded).Select(t => t.FullFilePath)
-                .Where(path => !Regex.IsMatch(path, SEPARATOR)).ToList();
-            Settings.Instance.ExpandedTargets = expandedItems.Any() ? string.Join(SEPARATOR, expandedItems) : string.Empty;
+                var expandedItems = Tasks.Where(t => t.IsExpanded).Select(t => t.FullFilePath)
+                    .Where(path => !Regex.IsMatch(path, SEPARATOR)).ToList();
+                Settings.Instance.ExpandedTargets = expandedItems.Any() ? string.Join(SEPARATOR, expandedItems) : string.Empty;
+            }
         }
 
         private BuildParameters CreateBuildParameters()

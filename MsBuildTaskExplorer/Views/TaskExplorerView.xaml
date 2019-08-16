@@ -13,7 +13,8 @@
              xmlns:e="clr-namespace:EventBinder;assembly=EventBinder"
              d:DesignHeight="300" d:DesignWidth="300"
              Name="MsBuildTaskExplorer"
-             e:Bind.Command="{e:EventBinding Initialize, Loaded}">
+             e:Bind.Command="{e:EventBinding Initialize, Loaded}"
+             e:Bind.Action="{e:EventBinding Unload, Unloaded}">
     <UserControl.Resources>
         <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey }" Color="{DynamicResource {x:Static vsfx:VsColors.ToolWindowTextKey}}"/>
         <Style TargetType="{x:Type TextBox}">
@@ -58,13 +59,13 @@
         </Style>
     </UserControl.Resources>
     <Grid>
-        <Grid x:Name="MainControl">
+        <Grid x:Name="MainControl" Visibility="{Binding MainViewVisibility, Mode=TwoWay}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <ProgressBar x:Name="ProgressBar" IsIndeterminate="{Binding ProgressBarIsIndeterminate}" Height="1" VerticalAlignment="Top"
-                         Visibility="{Binding ProgressBarVisibility, Mode=OneWayToSource}" Background="Transparent" BorderThickness="0" />
+            <ProgressBar x:Name="ProgressBar" Height="1" VerticalAlignment="Top" IsIndeterminate="True"
+                         Visibility="{Binding ProgressBarVisibility, Mode=TwoWay}" Background="Transparent" BorderThickness="0" />
             <Grid Grid.Row="0" Margin="12,12,12,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -84,7 +85,8 @@
                         <TextBlock Margin="2,0,6,0" Padding="0,1,0,0" Text="Refresh"/>
                     </StackPanel>
                 </Button>
-                <Button Grid.Column="2" Margin="6,0,0,0" Width="{Binding ElementName=FilterTb, Path=ActualHeight}" Click="SettingsButtonOnClick">
+                <Button Grid.Column="2" Margin="6,0,0,0" Width="{Binding ElementName=FilterTb, Path=ActualHeight}"
+                        e:Bind.Action="{e:EventBinding OpenSettings, Click}">
                     <Image Height="16" Width="16" Source="pack://application:,,,/MsBuildTaskExplorer;component/Resources/SettingsGroup_16x.png" />
                 </Button>
             </Grid>
@@ -123,7 +125,8 @@
                 </TreeView.ItemContainerStyle>
             </TreeView>
         </Grid>
-        <views:SettingsView x:Name="SettingsControl" Visibility="Collapsed"/>
+        <views:SettingsView Visibility="{Binding SettingsViewVisibility, Mode=TwoWay}"
+            x:Name="SettingsControl" DataContext="{Binding SettingsViewModel}"/>
     </Grid>
 </UserControl>
 
