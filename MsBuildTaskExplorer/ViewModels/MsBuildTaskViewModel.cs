@@ -11,11 +11,11 @@ namespace MsBuildTaskExplorer.ViewModels
         {
             FullFilePath = task.FullFilePath;
             RelativeFilePath = task.RelativeFilePath;
-            Targets = task.Targets.Select(target => new MsBuildTargetViewModel(this, baseViewModel, target)).ToList();
+            Targets = task.Targets.Select(target => ViewModelFactory.Create<MsBuildTargetViewModel>(this, baseViewModel, target)).ToList();
         }
 
         [Inpc]
-        public bool IsExpanded { get; set; }
+        public virtual bool IsExpanded { get; set; }
 
         public string FullFilePath { get; }
 

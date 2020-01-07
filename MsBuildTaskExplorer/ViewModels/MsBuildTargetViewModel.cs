@@ -1,23 +1,38 @@
-﻿namespace MsBuildTaskExplorer.ViewModels
+﻿using AopInpc;
+using System.ComponentModel;
+using System.Threading.Tasks;
+
+namespace MsBuildTaskExplorer.ViewModels
 {
-    internal class MsBuildTargetViewModel
+    internal class MsBuildTargetViewModel : INotifyPropertyChangedCaller
     {
+        private readonly TaskExplorerViewModel _baseViewModel;
 
         public MsBuildTargetViewModel(MsBuildTaskViewModel parent, TaskExplorerViewModel baseViewModel, string target)
         {
+            _baseViewModel = baseViewModel;
             Parent = parent;
             Target = target;
-            ExecuteTask = baseViewModel.ExecuteTask;
-            PrintAllProps = baseViewModel.PrintAllProps;
-            AbortTask = baseViewModel.AbortTask;
         }
 
         public MsBuildTaskViewModel Parent { get; }
 
         public string Target { get; }
 
-        public virtual AsyncLambdaCommand<MsBuildTargetViewModel> ExecuteTask { get; }
-        public virtual AsyncLambdaCommand<MsBuildTargetViewModel> PrintAllProps { get; }
-        public virtual AsyncLambdaCommand AbortTask { get; }
+        public async Task Execute()
+        {
+            await _baseViewModel.Execute(this);
+        }
+
+        public void PrintAllProps() => _baseViewModel.PrintAllProps(this);
+
+        public void Abort() => _baseViewModel.Abort();
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

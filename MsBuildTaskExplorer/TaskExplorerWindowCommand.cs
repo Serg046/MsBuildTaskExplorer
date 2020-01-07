@@ -2,6 +2,7 @@
 using System.ComponentModel.Design;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using MsBuildTaskExplorer.Views;
 
 namespace MsBuildTaskExplorer
 {
@@ -16,22 +17,19 @@ namespace MsBuildTaskExplorer
         {
             _package = package ?? throw new ArgumentNullException(nameof(package));
 
-            var commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if (commandService != null)
+            if (ServiceProvider.GetService(typeof(IMenuCommandService)) is IMenuCommandService commandService)
             {
                 var menuCommandId = new CommandID(CommandSet, CommandId);
-                var menuItem = new MenuCommand(this.ShowToolWindow, menuCommandId);
+                var menuItem = new MenuCommand(ShowToolWindow, menuCommandId);
                 commandService.AddCommand(menuItem);
             }
         }
 
-        public static TaskExplorerWindowCommand Instance
-        {
-            get;
-            private set;
-        }
+        public static TaskExplorerWindowCommand Instance { get; private set; }
 
-        public IServiceProvider ServiceProvider => this._package;
+        public TaskExplorerWindow Control { get; set; }
+
+        public IServiceProvider ServiceProvider => _package;
 
         public static void Initialize(Package package)
         {
@@ -40,7 +38,7 @@ namespace MsBuildTaskExplorer
 
         private void ShowToolWindow(object sender, EventArgs e)
         {
-            var window = this._package.FindToolWindow(typeof(TaskExplorerWindow), 0, true);
+            var window = _package.FindToolWindow(typeof(TaskExplorerWindow), 0, true);
             if (window?.Frame == null)
             {
                 throw new NotSupportedException("Cannot create tool window");

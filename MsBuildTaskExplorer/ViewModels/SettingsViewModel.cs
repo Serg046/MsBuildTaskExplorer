@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using AopInpc;
@@ -23,7 +22,7 @@ namespace MsBuildTaskExplorer.ViewModels
         [Inpc]
         public virtual Visibility SettingsViewVisibility { get; set; }
 
-        public Func<Task> NavigateBack => async () =>
+        public async Task NavigateBack()
         {
             SettingsViewVisibility = Visibility.Collapsed;
             _parentViewModel.ProgressBarVisibility = Visibility.Visible;
@@ -31,7 +30,7 @@ namespace MsBuildTaskExplorer.ViewModels
             Settings.Instance.SupportedFileExtensions = SupportedFileExtensions ?? "";
             await _parentViewModel.UpdateTaskList();
             _parentViewModel.ProgressBarVisibility = Visibility.Collapsed;
-        };
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

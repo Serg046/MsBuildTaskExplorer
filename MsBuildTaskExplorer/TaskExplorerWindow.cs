@@ -7,10 +7,12 @@ namespace MsBuildTaskExplorer
     [Guid("5b66e03c-6a61-434c-b7a1-ab7d3e3b0a6a")]
     public class TaskExplorerWindow : ToolWindowPane
     {
+	    public const string TITLE = "MsBuild Task Explorer";
+
         public TaskExplorerWindow() : base(null)
         {
-            this.Caption = "MsBuild Task Explorer";
-            this.Content = new TaskExplorerView();
+	        Caption = TITLE;
+            Content = TaskExplorerView.Instance;
         }
     }
 }

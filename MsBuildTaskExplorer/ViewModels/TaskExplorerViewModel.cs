@@ -24,65 +24,6 @@ namespace MsBuildTaskExplorer.ViewModels
         {
             Tasks = new ObservableCollection<MsBuildTaskViewModel>();
             SettingsViewModel = ViewModelFactory.Create<SettingsViewModel>(this);
-            Initialize = new AsyncLambdaCommand(async () =>
-            {
-                if (!_isInitialized)
-                {
-                    var filter = Settings.Instance.Filter;
-                    if (!string.IsNullOrEmpty(filter))
-                        Filter = filter;
-                    _solutionInfo = new SolutionInfo();
-                    await UpdateTaskList();
-                    _solutionInfo.SolutionOpened += async info => await UpdateTaskList();
-                    _solutionInfo.SolutionClosed += info => Tasks.Clear();
-                    _isInitialized = true;
-                }
-                ProgressBarVisibility = Visibility.Collapsed;
-            });
-            Refresh = new AsyncLambdaCommand(async () =>
-            {
-                SaveSettings();
-                await UpdateTaskList();
-            });
-            ExecuteTask = new AsyncLambdaCommand<MsBuildTargetViewModel>(async (vm) =>
-            {
-                if (!_isTargetRunning)
-                {
-                    _isTargetRunning = true;
-                    ProgressBarVisibility = Visibility.Visible;
-                    _solutionInfo.ShowOutputWindow();
-
-                    await Task.Run(() => BuildManager.DefaultBuildManager.Build(CreateBuildParameters(),
-                        CreateBuildRequest(vm.Parent.FullFilePath, vm.Target)));
-
-                    ProgressBarVisibility = Visibility.Collapsed;
-                    _isTargetRunning = false;
-                }
-            });
-            PrintAllProps = new AsyncLambdaCommand<MsBuildTargetViewModel>((vm) =>
-            {
-                _solutionInfo.ShowOutputWindow();
-                
-                var properties = _solutionInfo.GetAllProperties(vm.Parent.FullFilePath);
-                if (properties == null || properties.Count == 0)
-                {
-                    _solutionInfo.WriteOutputLine("There is no any property");
-                }
-                else
-                {
-                    foreach (var projectProperty in properties.OrderBy(p => p.Name))
-                    {
-                        _solutionInfo.WriteOutputLine($"{projectProperty.Name} = {projectProperty.EvaluatedValue}");
-                    }
-                }
-                return Task.CompletedTask;
-            });
-            AbortTask = new AsyncLambdaCommand(() =>
-            {
-                _solutionInfo.ShowOutputWindow();
-                BuildManager.DefaultBuildManager.CancelAllSubmissions();
-                return Task.CompletedTask;
-            });
         }
 
         [Inpc]
@@ -98,19 +39,77 @@ namespace MsBuildTaskExplorer.ViewModels
 
         public SettingsViewModel SettingsViewModel { get; }
 
-        public virtual AsyncLambdaCommand Initialize { get; }
-        public virtual Action Unload => () => SaveSettings();
-        public virtual AsyncLambdaCommand Refresh { get; }
-        public virtual AsyncLambdaCommand<MsBuildTargetViewModel> ExecuteTask { get; }
-        public virtual AsyncLambdaCommand<MsBuildTargetViewModel> PrintAllProps { get; }
-        public virtual AsyncLambdaCommand AbortTask { get; }
-        public Action OpenSettings => () =>
+        public virtual async Task Initialize()
+        {
+            if (!_isInitialized)
+            {
+                var filter = Settings.Instance.Filter;
+                if (!string.IsNullOrEmpty(filter))
+                    Filter = filter;
+                _solutionInfo = new SolutionInfo();
+                await UpdateTaskList();
+                _solutionInfo.SolutionOpened += async info => await UpdateTaskList();
+                _solutionInfo.SolutionClosed += info => Tasks.Clear();
+                _isInitialized = true;
+            }
+            ProgressBarVisibility = Visibility.Collapsed;
+        }
+
+        public virtual void Unload() => SaveSettings();
+
+        public virtual async Task Refresh()
+        {
+            SaveSettings();
+            await UpdateTaskList();
+        }
+
+        public virtual async Task Execute(MsBuildTargetViewModel targetVm)
+        {
+            if (!_isTargetRunning)
+            {
+                _isTargetRunning = true;
+                ProgressBarVisibility = Visibility.Visible;
+                _solutionInfo.ShowOutputWindow();
+
+                await Task.Run(() => BuildManager.DefaultBuildManager.Build(CreateBuildParameters(),
+                    CreateBuildRequest(targetVm.Parent.FullFilePath, targetVm.Target)));
+
+                ProgressBarVisibility = Visibility.Collapsed;
+                _isTargetRunning = false;
+            }
+        }
+
+        public virtual void PrintAllProps(MsBuildTargetViewModel targetVm)
+        {
+            _solutionInfo.ShowOutputWindow();
+
+            var properties = _solutionInfo.GetAllProperties(targetVm.Parent.FullFilePath);
+            if (properties == null || properties.Count == 0)
+            {
+                _solutionInfo.WriteOutputLine("There is no any property");
+            }
+            else
+            {
+                foreach (var projectProperty in properties.OrderBy(p => p.Name))
+                {
+                    _solutionInfo.WriteOutputLine($"{projectProperty.Name} = {projectProperty.EvaluatedValue}");
+                }
+            }
+        }
+
+        public virtual void Abort()
+        {
+            _solutionInfo.ShowOutputWindow();
+            BuildManager.DefaultBuildManager.CancelAllSubmissions();
+        }
+
+        public virtual void OpenSettings()
         {
             MainViewVisibility = Visibility.Collapsed;
             SettingsViewModel.SettingsViewVisibility = Visibility.Visible;
-        };
+        }
 
-        public async Task UpdateTaskList()
+        public virtual async Task UpdateTaskList()
         {
             if (_solutionInfo?.IsOpen == true)
             {

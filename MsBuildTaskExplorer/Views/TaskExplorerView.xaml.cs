@@ -11,5 +11,7 @@ namespace MsBuildTaskExplorer.Views
             this.InitializeComponent();
             DataContext = ViewModelFactory.Create<TaskExplorerViewModel>();
         }
+
+        public static TaskExplorerView Instance { get; } = new TaskExplorerView();
     }
 }

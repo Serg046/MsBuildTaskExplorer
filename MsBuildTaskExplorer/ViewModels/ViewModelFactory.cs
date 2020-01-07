@@ -3,6 +3,8 @@ using Castle.DynamicProxy;
 using System;
 using System.Diagnostics;
 using System.Windows;
+using Microsoft.VisualStudio.PlatformUI;
+using MsBuildTaskExplorer.Views;
 
 namespace MsBuildTaskExplorer.ViewModels
 {
@@ -30,7 +32,7 @@ namespace MsBuildTaskExplorer.ViewModels
 
         private class ExceptionInterceptor : IInterceptor
         {
-            public void Intercept(IInvocation invocation)
+            public async void Intercept(IInvocation invocation)
             {
                 try
                 {
@@ -38,7 +40,10 @@ namespace MsBuildTaskExplorer.ViewModels
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.ToString());
+	                new ErrorView().ShowDialog(e.ToString());
+                    var vm = Create<TaskExplorerViewModel>();
+                    TaskExplorerView.Instance.DataContext = vm;
+                    await vm.Initialize();
                 }
             }
         }

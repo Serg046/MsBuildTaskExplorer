@@ -9,7 +9,7 @@
              xmlns:e="clr-namespace:EventBinder;assembly=EventBinder"
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel Margin="12,12,12,0">
-        <Button Height="22" Content="Back" e:Bind.AwaitableAction="{e:EventBinding NavigateBack, Click}"/>
+        <Button Height="22" Content="Back" Click="{e:EventBinding NavigateBack}" />
         <HeaderedContentControl Header="Supported File Extensions:" Margin="0,12,0,0">
             <TextBox Height="22" x:Name="SupportedExtTb" Margin="0,2,0,0" Padding="0,2,0,0"
                      Background="Transparent" Text="{Binding SupportedFileExtensions, Mode=TwoWay}" />
