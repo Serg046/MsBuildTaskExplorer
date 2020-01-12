@@ -29,7 +29,7 @@ namespace MsBuildTaskExplorer.ViewModels
         [Inpc]
         public virtual string Filter { get; set; }
 
-        public virtual ObservableCollection<MsBuildTaskViewModel> Tasks { get; }
+        public ObservableCollection<MsBuildTaskViewModel> Tasks { get; }
 
         [Inpc]
         public virtual Visibility ProgressBarVisibility { get; set; }
@@ -178,7 +178,7 @@ namespace MsBuildTaskExplorer.ViewModels
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public void RaisePropertyChanged(string propertyName)
+        public virtual void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

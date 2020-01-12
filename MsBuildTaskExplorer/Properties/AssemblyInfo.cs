@@ -34,4 +34,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: EventBinder.AssemblyReference]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
-[assembly: InternalsVisibleTo(EventBindingExtension.ASSEMBLY_NAME)]
+[assembly: InternalsVisibleTo(EventBinding.ASSEMBLY_NAME)]

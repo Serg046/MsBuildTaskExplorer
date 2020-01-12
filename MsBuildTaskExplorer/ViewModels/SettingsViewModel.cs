@@ -22,7 +22,7 @@ namespace MsBuildTaskExplorer.ViewModels
         [Inpc]
         public virtual Visibility SettingsViewVisibility { get; set; }
 
-        public async Task NavigateBack()
+        public virtual async Task NavigateBack()
         {
             SettingsViewVisibility = Visibility.Collapsed;
             _parentViewModel.ProgressBarVisibility = Visibility.Visible;
@@ -34,7 +34,7 @@ namespace MsBuildTaskExplorer.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void RaisePropertyChanged(string propertyName)
+        public virtual void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

@@ -19,18 +19,18 @@ namespace MsBuildTaskExplorer.ViewModels
 
         public string Target { get; }
 
-        public async Task Execute()
+        public virtual async Task Execute()
         {
             await _baseViewModel.Execute(this);
         }
 
-        public void PrintAllProps() => _baseViewModel.PrintAllProps(this);
+        public virtual void PrintAllProps() => _baseViewModel.PrintAllProps(this);
 
-        public void Abort() => _baseViewModel.Abort();
+        public virtual void Abort() => _baseViewModel.Abort();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void RaisePropertyChanged(string propertyName)
+        public virtual void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

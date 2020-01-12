@@ -2,20 +2,21 @@
 using Castle.DynamicProxy;
 using System;
 using System.Diagnostics;
-using System.Windows;
-using Microsoft.VisualStudio.PlatformUI;
 using MsBuildTaskExplorer.Views;
+using System.Threading.Tasks;
 
 namespace MsBuildTaskExplorer.ViewModels
 {
     internal class ViewModelFactory
     {
+        private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
+
         public static T Create<T>(params object[] args) where T : class, INotifyPropertyChangedCaller
         {
             var inpcType = typeof(T);
             Debug.Assert(Validate(inpcType), "All injected properties must be public virtual read/write allowed");
-            return (T)new ProxyGenerator().CreateClassProxy(inpcType, args,
-                new InpcInterceptor(), new ExceptionInterceptor());
+            return (T)_proxyGenerator.CreateClassProxy(inpcType, args,
+                new InpcInterceptor(), new ExceptionInterceptor().ToInterceptor());
         }
 
         internal static bool Validate(Type inpcType)
@@ -30,9 +31,9 @@ namespace MsBuildTaskExplorer.ViewModels
             return true;
         }
 
-        private class ExceptionInterceptor : IInterceptor
+        private class ExceptionInterceptor : IAsyncInterceptor
         {
-            public async void Intercept(IInvocation invocation)
+            public void InterceptSynchronous(IInvocation invocation)
             {
                 try
                 {
@@ -40,11 +41,59 @@ namespace MsBuildTaskExplorer.ViewModels
                 }
                 catch (Exception e)
                 {
-	                new ErrorView().ShowDialog(e.ToString());
-                    var vm = Create<TaskExplorerViewModel>();
-                    TaskExplorerView.Instance.DataContext = vm;
-                    await vm.Initialize();
+                    new ErrorView().ShowDialog(e.ToString());
+                    ReloadApp();
                 }
+            }
+
+            public void InterceptAsynchronous(IInvocation invocation)
+            {
+                invocation.ReturnValue = InternalInterceptAsynchronous(invocation);
+            }
+
+            private async Task InternalInterceptAsynchronous(IInvocation invocation)
+            {
+                try
+                {
+                    invocation.Proceed();
+                    var task = (Task)invocation.ReturnValue;
+                    await task;
+                }
+                catch (Exception e)
+                {
+                    new ErrorView().ShowDialog(e.ToString());
+                    await ReloadApp();
+                }
+            }
+
+            public void InterceptAsynchronous<TResult>(IInvocation invocation)
+            {
+                invocation.ReturnValue = InternalInterceptAsynchronous<TResult>(invocation);
+            }
+
+            private async Task<TResult> InternalInterceptAsynchronous<TResult>(IInvocation invocation)
+            {
+                var result = default(TResult);
+                try
+                {
+                    invocation.Proceed();
+                    var task = (Task<TResult>) invocation.ReturnValue;
+                    result = await task;
+                }
+                catch (Exception e)
+                {
+                    new ErrorView().ShowDialog(e.ToString());
+                    await ReloadApp();
+                }
+
+                return result;
+            }
+
+            private async Task ReloadApp()
+            {
+                var vm = Create<TaskExplorerViewModel>();
+                TaskExplorerView.Instance.DataContext = vm;
+                await vm.Initialize();
             }
         }
     }
