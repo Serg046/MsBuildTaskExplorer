@@ -21,6 +21,11 @@
                     <SolidColorBrush Color="{DynamicResource {x:Static vsfx:VsColors.ToolWindowTextKey}}"/>
                 </Setter.Value>
             </Setter>
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Color="{DynamicResource {x:Static vsfx:VsColors.ToolWindowTextKey}}"/>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style TargetType="{x:Type HeaderedContentControl}">
             <Setter Property="Foreground">
