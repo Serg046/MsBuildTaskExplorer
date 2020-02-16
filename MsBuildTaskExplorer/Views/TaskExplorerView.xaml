@@ -112,27 +112,20 @@
             </Grid.RowDefinitions>
             <ProgressBar x:Name="ProgressBar" Height="1" VerticalAlignment="Top" IsIndeterminate="True"
                          Visibility="{Binding ProgressBarVisibility, Mode=TwoWay}" Background="Transparent" BorderThickness="0" />
-            <Grid Grid.Row="0" Margin="12,12,12,0">
+            <Grid Grid.Row="0" Margin="12,12,12,0" Height="24">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="FilterTb" Height="{Binding ElementName=RefreshButton, Path=ActualHeight}"
                          Template="{StaticResource HintTextBox}" Tag="FilePath.*|TargetName.+"
+                         TextChanged="{e:EventBinding ApplyFilterAsync, {Binding ElementName=FilterTb, Path=Text}}"
                          Grid.Column="0" Padding="16,3,0,0" Text="{Binding Filter, Mode=TwoWay}">
                     <TextBox.Background>
                         <ImageBrush AlignmentX="Left" ImageSource="pack://application:,,,/MsBuildTaskExplorer;component/Resources/Filter.png" Stretch="None"/>
                     </TextBox.Background>
                 </TextBox>
-                <Button Grid.Column="1" Margin="12,0,0,0" Padding="3" x:Name="RefreshButton" HorizontalAlignment="Left"
-                        Click="{e:EventBinding Refresh}">
-                    <StackPanel Orientation="Horizontal" >
-                        <Image Height="16" Width="16" Source="pack://application:,,,/MsBuildTaskExplorer;component/Resources/Refresh.png" />
-                        <TextBlock Margin="2,0,6,0" Padding="0,1,0,0" Text="Refresh"/>
-                    </StackPanel>
-                </Button>
-                <Button Grid.Column="2" Margin="6,0,0,0" Width="{Binding ElementName=FilterTb, Path=ActualHeight}"
+                <Button Grid.Column="1" Margin="6,0,0,0" Width="{Binding ElementName=FilterTb, Path=ActualHeight}"
                         Click="{e:EventBinding OpenSettings}">
                     <Image Height="16" Width="16" Source="pack://application:,,,/MsBuildTaskExplorer;component/Resources/SettingsGroup_16x.png" />
                 </Button>

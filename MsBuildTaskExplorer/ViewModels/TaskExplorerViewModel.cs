@@ -14,7 +14,6 @@ namespace MsBuildTaskExplorer.ViewModels
     internal class TaskExplorerViewModel : INotifyPropertyChangedCaller
     {
         private const string SEPARATOR = "<`~`>";
-        private const string ENSURE_NUGET_PACKAGE_BUILD_IMPORTS = "EnsureNuGetPackageBuildImports";
 
         private SolutionInfo _solutionInfo;
         private bool _isInitialized;
@@ -56,12 +55,6 @@ namespace MsBuildTaskExplorer.ViewModels
         }
 
         public virtual void Unload() => SaveSettings();
-
-        public virtual async Task Refresh()
-        {
-            SaveSettings();
-            await UpdateTaskList();
-        }
 
         public virtual async Task Execute(MsBuildTargetViewModel targetVm)
         {
@@ -109,13 +102,19 @@ namespace MsBuildTaskExplorer.ViewModels
             SettingsViewModel.SettingsViewVisibility = Visibility.Visible;
         }
 
-        public virtual async Task UpdateTaskList()
+        public virtual async Task ApplyFilterAsync(string filter)
+        {
+	        SaveSettings(filter);
+	        await UpdateTaskList(filter);
+        }
+
+        public virtual async Task UpdateTaskList(string filter = null)
         {
             if (_solutionInfo?.IsOpen == true)
             {
                 ProgressBarVisibility = Visibility.Visible;
 
-                var tasks = await _solutionInfo.GetMsBuildTasksAsync();
+                var tasks = await _solutionInfo.GetMsBuildTasksAsync(filter ?? Filter);
                 var orderedTasks = tasks
                     .Where(t => t.Targets != null && t.Targets.Any())
                     .OrderBy(t => t.FullFilePath);
@@ -125,7 +124,6 @@ namespace MsBuildTaskExplorer.ViewModels
 
                 foreach (var task in orderedTasks)
                 {
-	                task.Filter = (fullFilePath, targetName) => GetFilter(fullFilePath, targetName, Filter);
                     var taskViewModel = ViewModelFactory.Create<MsBuildTaskViewModel>(task, this);
                     if (expandedTargets?.Length > 0)
                     {
@@ -145,31 +143,12 @@ namespace MsBuildTaskExplorer.ViewModels
             }
         }
 
-        private static bool GetFilter(string fullFilePath, string targetName, string originalFilter)
+        private void SaveSettings(string filter = null)
         {
-	        var filter = targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS;
-	        var filters = originalFilter?.Split('|');
-	        if (filters != null)
-	        {
-		        if (filters.Length == 1)
-		        {
-			        filter = filter && Regex.IsMatch(targetName, filters[0], RegexOptions.IgnoreCase);
-		        }
-		        else if (filters.Length == 2)
-		        {
-			        filter = filter && Regex.IsMatch(targetName, filters[1], RegexOptions.IgnoreCase)
-			                        && Regex.IsMatch(fullFilePath, filters[0], RegexOptions.IgnoreCase);
-		        }
-	        }
-
-	        return filter;
-        }
-
-        private void SaveSettings()
-        {
+	        var actualFilter = filter ?? Filter ?? string.Empty;
             if (_solutionInfo?.IsOpen == true)
             {
-                Settings.Instance.Filter = !string.IsNullOrEmpty(Filter) ? Filter : string.Empty;
+	            Settings.Instance.Filter = actualFilter;
 
                 var expandedItems = Tasks.Where(t => t.IsExpanded).Select(t => t.FullFilePath)
                     .Where(path => !Regex.IsMatch(path, SEPARATOR)).ToList();

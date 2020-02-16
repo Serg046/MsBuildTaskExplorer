@@ -7,6 +7,7 @@ using EnvDTE80;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Exceptions;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MsBuildTaskExplorer
@@ -14,7 +15,9 @@ namespace MsBuildTaskExplorer
     internal class SolutionInfo
     {
         private const string OUTPUT_WINDOW_NAME = "MsBuildTaskExplorer";
+        private const string ENSURE_NUGET_PACKAGE_BUILD_IMPORTS = "EnsureNuGetPackageBuildImports";
 
+        private readonly object _projSync = new object();
         private DTE2 _dte;
         private SolutionEvents _solutionEvents;
         private string _solutionFolder;
@@ -77,21 +80,21 @@ namespace MsBuildTaskExplorer
             _solutionFolder = IsOpen ? Path.GetDirectoryName(_dte.Solution.FullName) : null;
         }
 
-        public Task<IReadOnlyList<MsBuildTask>> GetMsBuildTasksAsync()
+        public Task<IReadOnlyList<MsBuildTask>> GetMsBuildTasksAsync(string filter)
         {
             if (!IsOpen)
                 throw new InvalidOperationException("Solution is closed");
 
-            return Task.Run(() => GetMsBuildTasks(new DirectoryInfo(_solutionFolder)));
+            return Task.Run(() => GetMsBuildTasks(new DirectoryInfo(_solutionFolder), filter));
         }
 
-        private IReadOnlyList<MsBuildTask> GetMsBuildTasks(DirectoryInfo directory)
+        private IReadOnlyList<MsBuildTask> GetMsBuildTasks(DirectoryInfo directory, string filter)
         {
             var tasks = directory.GetDirectories()
                 .Aggregate(new List<MsBuildTask>(),
                     (current, dir) =>
                     {
-                        current.AddRange(GetMsBuildTasks(dir));
+                        current.AddRange(GetMsBuildTasks(dir, filter));
                         return current;
                     });
 
@@ -101,7 +104,7 @@ namespace MsBuildTaskExplorer
                 {
                     try
                     {
-                        tasks.Add(BuildMsBuildTask(projFile.FullName));
+                        tasks.Add(BuildMsBuildTask(projFile.FullName, filter));
                     }
                     catch (InvalidProjectFileException ex)
                     {
@@ -120,15 +123,42 @@ namespace MsBuildTaskExplorer
             return tasks;
         }
 
-        private MsBuildTask BuildMsBuildTask(string fullPath)
+        private MsBuildTask BuildMsBuildTask(string fullPath, string filter)
         {
-            var project = ProjectCollection.GlobalProjectCollection.LoadProject(fullPath);
-            var targets = project.Targets.Values
-                .Where(t => t.Location.File.StartsWith(_solutionFolder)
-                            || t.Name == "Build" || t.Name == "Clean" || t.Name == "Rebuild")
-                .Select(t => t.Name);
-            ProjectCollection.GlobalProjectCollection.UnloadProject(project);
-            return new MsBuildTask(fullPath, fullPath.Replace(_solutionFolder, string.Empty).TrimStart('\\'), targets);
+	        lock (_projSync)
+	        {
+	            var project = ProjectCollection.GlobalProjectCollection.LoadProject(fullPath);
+	            var targets = project.Targets.Values
+	                .Where(t => t.Location.File.StartsWith(_solutionFolder)
+	                            || t.Name == "Build" || t.Name == "Clean" || t.Name == "Rebuild")
+	                .Select(t => t.Name);
+	            ProjectCollection.GlobalProjectCollection.UnloadProject(project);
+	            return new MsBuildTask(
+		            fullPath,
+		            fullPath.Replace(_solutionFolder, string.Empty).TrimStart('\\'),
+		            (relativeFilePath, targetName) => GetFilter(relativeFilePath, targetName, filter),
+		            targets);
+            }
+	    }
+
+        private static bool GetFilter(string relativeFilePath, string targetName, string originalFilter)
+        {
+	        var filter = targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS;
+	        var filters = originalFilter?.Split('|');
+	        if (filter && filters != null)
+	        {
+		        if (filters.Length == 1)
+		        {
+			        filter = Regex.IsMatch(targetName, filters[0], RegexOptions.IgnoreCase);
+		        }
+		        else if (filters.Length == 2)
+		        {
+			        filter = Regex.IsMatch(targetName, filters[1], RegexOptions.IgnoreCase)
+			                 && Regex.IsMatch(relativeFilePath, filters[0], RegexOptions.IgnoreCase);
+		        }
+	        }
+
+	        return filter;
         }
 
         public void WriteOutputLine(string value)
