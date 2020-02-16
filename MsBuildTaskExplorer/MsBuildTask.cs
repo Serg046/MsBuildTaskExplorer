@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace MsBuildTaskExplorer
@@ -17,10 +16,12 @@ namespace MsBuildTaskExplorer
 
         public string FullFilePath { get; }
         public string RelativeFilePath { get; }
-        public Func<string,bool> Filter { get; set; }
+        public FilterCallback Filter { get; set; }
 
         public IEnumerable<string> Targets => _targets != null && Filter != null
-            ? _targets.Where(Filter)
+            ? _targets.Where(target => Filter(FullFilePath, target))
             : _targets;
+
+        public delegate bool FilterCallback(string fullFilePath, string targetName);
     }
 }

@@ -114,12 +114,6 @@ namespace MsBuildTaskExplorer.ViewModels
             if (_solutionInfo?.IsOpen == true)
             {
                 ProgressBarVisibility = Visibility.Visible;
-                Func<string, bool> filter;
-                if (string.IsNullOrEmpty(Filter))
-                    filter = targetName => targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS;
-                else
-                    filter = targetName => targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS
-                                           && Regex.IsMatch(targetName, Filter, RegexOptions.IgnoreCase);
 
                 var tasks = await _solutionInfo.GetMsBuildTasksAsync();
                 var orderedTasks = tasks
@@ -131,7 +125,7 @@ namespace MsBuildTaskExplorer.ViewModels
 
                 foreach (var task in orderedTasks)
                 {
-                    task.Filter = filter;
+	                task.Filter = (fullFilePath, targetName) => GetFilter(fullFilePath, targetName, Filter);
                     var taskViewModel = ViewModelFactory.Create<MsBuildTaskViewModel>(task, this);
                     if (expandedTargets?.Length > 0)
                     {
@@ -149,6 +143,26 @@ namespace MsBuildTaskExplorer.ViewModels
 
                 ProgressBarVisibility = Visibility.Collapsed;
             }
+        }
+
+        private static bool GetFilter(string fullFilePath, string targetName, string originalFilter)
+        {
+	        var filter = targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS;
+	        var filters = originalFilter?.Split('|');
+	        if (filters != null)
+	        {
+		        if (filters.Length == 1)
+		        {
+			        filter = filter && Regex.IsMatch(targetName, filters[0], RegexOptions.IgnoreCase);
+		        }
+		        else if (filters.Length == 2)
+		        {
+			        filter = filter && Regex.IsMatch(targetName, filters[1], RegexOptions.IgnoreCase)
+			                        && Regex.IsMatch(fullFilePath, filters[0], RegexOptions.IgnoreCase);
+		        }
+	        }
+
+	        return filter;
         }
 
         private void SaveSettings()

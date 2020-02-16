@@ -60,6 +60,49 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <ControlTemplate TargetType="{x:Type TextBox}" x:Key="HintTextBox">
+            <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                <Grid>
+                    <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                    <TextBlock x:Name="InternalWatermarkLabel" 
+                               Text="{TemplateBinding Tag}" 
+                               Visibility="Collapsed" Focusable="False"
+                               VerticalAlignment="Top" Margin="16,3,0,0"
+                               Background="Transparent">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Foreground">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="{DynamicResource {x:Static vsfx:VsColors.GrayTextKey}}"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsFocused" Value="False" />
+                        <Condition Property="Text" Value="" />
+                    </MultiTrigger.Conditions>
+                    <MultiTrigger.Setters>
+                        <Setter Property="Visibility" TargetName="InternalWatermarkLabel"
+                                Value="Visible" />
+                    </MultiTrigger.Setters>
+                </MultiTrigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" TargetName="border" Value="#FF7EB4EA"/>
+                </Trigger>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="BorderBrush" TargetName="border" Value="#FF569DE5"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
     </UserControl.Resources>
     <Grid>
         <Grid x:Name="MainControl" Visibility="{Binding MainViewVisibility, Mode=TwoWay}">
@@ -76,7 +119,8 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="FilterTb" Height="{Binding ElementName=RefreshButton, Path=ActualHeight}"
-                         Grid.Column="0" Padding="16,4,0,0" Text="{Binding Filter, Mode=TwoWay}">
+                         Template="{StaticResource HintTextBox}" Tag="FilePath.*|TargetName.+"
+                         Grid.Column="0" Padding="16,3,0,0" Text="{Binding Filter, Mode=TwoWay}">
                     <TextBox.Background>
                         <ImageBrush AlignmentX="Left" ImageSource="pack://application:,,,/MsBuildTaskExplorer;component/Resources/Filter.png" Stretch="None"/>
                     </TextBox.Background>
