@@ -151,7 +151,7 @@ namespace MsBuildTaskExplorer
 		        {
 			        if (filters.Length == 1)
 			        {
-				        filter = Regex.IsMatch(targetName, filters[0], RegexOptions.IgnoreCase);
+				        filter = Regex.IsMatch(relativeFilePath, filters[0], RegexOptions.IgnoreCase);
 			        }
 			        else if (filters.Length == 2)
 			        {
