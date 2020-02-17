@@ -141,24 +141,32 @@ namespace MsBuildTaskExplorer
             }
 	    }
 
-        private static bool GetFilter(string relativeFilePath, string targetName, string originalFilter)
+        private bool GetFilter(string relativeFilePath, string targetName, string originalFilter)
         {
-	        var filter = targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS;
-	        var filters = originalFilter?.Split('|');
-	        if (filter && filters != null)
+	        try
 	        {
-		        if (filters.Length == 1)
+		        var filter = targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS;
+		        var filters = originalFilter?.Split('|');
+		        if (filter && filters != null)
 		        {
-			        filter = Regex.IsMatch(targetName, filters[0], RegexOptions.IgnoreCase);
+			        if (filters.Length == 1)
+			        {
+				        filter = Regex.IsMatch(targetName, filters[0], RegexOptions.IgnoreCase);
+			        }
+			        else if (filters.Length == 2)
+			        {
+				        filter = Regex.IsMatch(targetName, filters[1], RegexOptions.IgnoreCase)
+				                 && Regex.IsMatch(relativeFilePath, filters[0], RegexOptions.IgnoreCase);
+			        }
 		        }
-		        else if (filters.Length == 2)
-		        {
-			        filter = Regex.IsMatch(targetName, filters[1], RegexOptions.IgnoreCase)
-			                 && Regex.IsMatch(relativeFilePath, filters[0], RegexOptions.IgnoreCase);
-		        }
-	        }
 
-	        return filter;
+		        return filter;
+	        }
+	        catch (ArgumentException ex)
+	        {
+		        WriteOutputLine(ex.ToString());
+                return false;
+	        }
         }
 
         public void WriteOutputLine(string value)
