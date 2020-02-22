@@ -7,17 +7,16 @@ namespace MsBuildTaskExplorer
     {
         private readonly IEnumerable<string> _targets;
 
-        public MsBuildTask(string fullFilePath, string relativeFilePath, FilterCallback filter, IEnumerable<string> targets)
+        public MsBuildTask(string fullFilePath, string relativeFilePath, IEnumerable<string> targets)
         {
             FullFilePath = fullFilePath;
             RelativeFilePath = relativeFilePath;
-            Filter = filter;
             _targets = targets.OrderBy(t => t);
         }
 
         public string FullFilePath { get; }
         public string RelativeFilePath { get; }
-        public FilterCallback Filter { get; }
+        public FilterCallback Filter { get; set; }
 
         public IEnumerable<string> Targets => _targets != null && Filter != null
             ? _targets.Where(target => Filter(RelativeFilePath, target))

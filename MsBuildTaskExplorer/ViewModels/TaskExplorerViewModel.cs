@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -14,10 +15,12 @@ namespace MsBuildTaskExplorer.ViewModels
     internal class TaskExplorerViewModel : INotifyPropertyChangedCaller
     {
         private const string SEPARATOR = "<`~`>";
+        private const string ENSURE_NUGET_PACKAGE_BUILD_IMPORTS = "EnsureNuGetPackageBuildImports";
 
         private SolutionInfo _solutionInfo;
         private bool _isInitialized;
         private bool _isTargetRunning;
+        private IReadOnlyList<MsBuildTask> _msBuildTasks;
 
         public TaskExplorerViewModel()
         {
@@ -47,7 +50,11 @@ namespace MsBuildTaskExplorer.ViewModels
                     Filter = filter;
                 _solutionInfo = new SolutionInfo();
                 await UpdateTaskList();
-                _solutionInfo.SolutionOpened += async info => await UpdateTaskList();
+                _solutionInfo.SolutionOpened += async info =>
+                {
+					_msBuildTasks = await _solutionInfo.GetMsBuildTasksAsync();
+                    await UpdateTaskList();
+                };
                 _solutionInfo.SolutionClosed += info => Tasks.Clear();
                 _isInitialized = true;
             }
@@ -114,8 +121,13 @@ namespace MsBuildTaskExplorer.ViewModels
             {
                 ProgressBarVisibility = Visibility.Visible;
 
-                var tasks = await _solutionInfo.GetMsBuildTasksAsync(filter ?? Filter);
-                var orderedTasks = tasks
+                MsBuildTask.FilterCallback filterCallback = (relativeFilePath, targetName)
+	                => GetFilter(relativeFilePath, targetName, filter ?? Filter);
+                foreach (var msBuildTask in _msBuildTasks)
+                {
+	                msBuildTask.Filter = filterCallback;
+                }
+                var orderedTasks = _msBuildTasks
                     .Where(t => t.Targets != null && t.Targets.Any())
                     .OrderBy(t => t.FullFilePath);
                 Tasks.Clear();
@@ -141,6 +153,34 @@ namespace MsBuildTaskExplorer.ViewModels
 
                 ProgressBarVisibility = Visibility.Collapsed;
             }
+        }
+
+        private bool GetFilter(string relativeFilePath, string targetName, string originalFilter)
+        {
+	        try
+	        {
+		        var filter = targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS;
+		        var filters = originalFilter?.Split('|');
+		        if (filter && filters != null)
+		        {
+			        if (filters.Length == 1)
+			        {
+				        filter = Regex.IsMatch(relativeFilePath, filters[0], RegexOptions.IgnoreCase);
+			        }
+			        else if (filters.Length == 2)
+			        {
+				        filter = Regex.IsMatch(targetName, filters[1], RegexOptions.IgnoreCase)
+				                 && Regex.IsMatch(relativeFilePath, filters[0], RegexOptions.IgnoreCase);
+			        }
+		        }
+
+		        return filter;
+	        }
+	        catch (ArgumentException ex)
+	        {
+		        _solutionInfo.WriteOutputLine(ex.ToString());
+		        return false;
+	        }
         }
 
         private void SaveSettings(string filter = null)

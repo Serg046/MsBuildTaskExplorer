@@ -15,7 +15,6 @@ namespace MsBuildTaskExplorer
     internal class SolutionInfo
     {
         private const string OUTPUT_WINDOW_NAME = "MsBuildTaskExplorer";
-        private const string ENSURE_NUGET_PACKAGE_BUILD_IMPORTS = "EnsureNuGetPackageBuildImports";
 
         private readonly object _projSync = new object();
         private DTE2 _dte;
@@ -80,21 +79,21 @@ namespace MsBuildTaskExplorer
             _solutionFolder = IsOpen ? Path.GetDirectoryName(_dte.Solution.FullName) : null;
         }
 
-        public Task<IReadOnlyList<MsBuildTask>> GetMsBuildTasksAsync(string filter)
+        public Task<IReadOnlyList<MsBuildTask>> GetMsBuildTasksAsync()
         {
             if (!IsOpen)
                 throw new InvalidOperationException("Solution is closed");
 
-            return Task.Run(() => GetMsBuildTasks(new DirectoryInfo(_solutionFolder), filter));
+            return Task.Run(() => GetMsBuildTasks(new DirectoryInfo(_solutionFolder)));
         }
 
-        private IReadOnlyList<MsBuildTask> GetMsBuildTasks(DirectoryInfo directory, string filter)
+        private IReadOnlyList<MsBuildTask> GetMsBuildTasks(DirectoryInfo directory)
         {
             var tasks = directory.GetDirectories()
                 .Aggregate(new List<MsBuildTask>(),
                     (current, dir) =>
                     {
-                        current.AddRange(GetMsBuildTasks(dir, filter));
+                        current.AddRange(GetMsBuildTasks(dir));
                         return current;
                     });
 
@@ -104,7 +103,7 @@ namespace MsBuildTaskExplorer
                 {
                     try
                     {
-                        tasks.Add(BuildMsBuildTask(projFile.FullName, filter));
+                        tasks.Add(BuildMsBuildTask(projFile.FullName));
                     }
                     catch (InvalidProjectFileException ex)
                     {
@@ -123,7 +122,7 @@ namespace MsBuildTaskExplorer
             return tasks;
         }
 
-        private MsBuildTask BuildMsBuildTask(string fullPath, string filter)
+        private MsBuildTask BuildMsBuildTask(string fullPath)
         {
 	        lock (_projSync)
 	        {
@@ -136,38 +135,9 @@ namespace MsBuildTaskExplorer
 	            return new MsBuildTask(
 		            fullPath,
 		            fullPath.Replace(_solutionFolder, string.Empty).TrimStart('\\'),
-		            (relativeFilePath, targetName) => GetFilter(relativeFilePath, targetName, filter),
 		            targets);
             }
 	    }
-
-        private bool GetFilter(string relativeFilePath, string targetName, string originalFilter)
-        {
-	        try
-	        {
-		        var filter = targetName != ENSURE_NUGET_PACKAGE_BUILD_IMPORTS;
-		        var filters = originalFilter?.Split('|');
-		        if (filter && filters != null)
-		        {
-			        if (filters.Length == 1)
-			        {
-				        filter = Regex.IsMatch(relativeFilePath, filters[0], RegexOptions.IgnoreCase);
-			        }
-			        else if (filters.Length == 2)
-			        {
-				        filter = Regex.IsMatch(targetName, filters[1], RegexOptions.IgnoreCase)
-				                 && Regex.IsMatch(relativeFilePath, filters[0], RegexOptions.IgnoreCase);
-			        }
-		        }
-
-		        return filter;
-	        }
-	        catch (ArgumentException ex)
-	        {
-		        WriteOutputLine(ex.ToString());
-                return false;
-	        }
-        }
 
         public void WriteOutputLine(string value)
         {
