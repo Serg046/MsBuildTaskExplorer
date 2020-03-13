@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="MsBuildTaskExplorer.Aseev Sergey.7710e34a-4d12-4150-af37-2bbc06a3f7e8" Version="1.5" Language="en-US" Publisher="Aseev Sergey" />
+        <Identity Id="MsBuildTaskExplorer.Aseev Sergey.7710e34a-4d12-4150-af37-2bbc06a3f7e8" Version="1.6" Language="en-US" Publisher="Aseev Sergey" />
         <DisplayName>MsBuild Task Explorer</DisplayName>
         <Description xml:space="preserve">Allows you to run any MSBuild target right from Visual Studio</Description>
         <Icon>Resources\Icon.png</Icon>

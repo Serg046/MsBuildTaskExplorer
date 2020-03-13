@@ -50,11 +50,7 @@ namespace MsBuildTaskExplorer.ViewModels
                     Filter = filter;
                 _solutionInfo = new SolutionInfo();
                 await UpdateTaskList();
-                _solutionInfo.SolutionOpened += async info =>
-                {
-					_msBuildTasks = await _solutionInfo.GetMsBuildTasksAsync();
-                    await UpdateTaskList();
-                };
+                _solutionInfo.SolutionOpened += info => UpdateTaskList();
                 _solutionInfo.SolutionClosed += info => Tasks.Clear();
                 _isInitialized = true;
             }
@@ -111,7 +107,7 @@ namespace MsBuildTaskExplorer.ViewModels
 
         public virtual async Task ApplyFilterAsync(string filter)
         {
-	        SaveSettings(filter);
+            SaveSettings(filter);
 	        await UpdateTaskList(filter);
         }
 
@@ -120,6 +116,11 @@ namespace MsBuildTaskExplorer.ViewModels
             if (_solutionInfo?.IsOpen == true)
             {
                 ProgressBarVisibility = Visibility.Visible;
+                if (_msBuildTasks == null)
+                {
+	                _msBuildTasks = await _solutionInfo.GetMsBuildTasksAsync();
+                }
+
 
                 MsBuildTask.FilterCallback filterCallback = (relativeFilePath, targetName)
 	                => GetFilter(relativeFilePath, targetName, filter ?? Filter);
