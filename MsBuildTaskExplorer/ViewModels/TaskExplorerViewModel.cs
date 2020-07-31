@@ -51,7 +51,11 @@ namespace MsBuildTaskExplorer.ViewModels
                 _solutionInfo = new SolutionInfo();
                 await UpdateTaskList();
                 _solutionInfo.SolutionOpened += info => UpdateTaskList();
-                _solutionInfo.SolutionClosed += info => Tasks.Clear();
+                _solutionInfo.SolutionClosed += info =>
+                {
+	                Tasks.Clear();
+	                _msBuildTasks = null;
+                };
                 _isInitialized = true;
             }
             ProgressBarVisibility = Visibility.Collapsed;
