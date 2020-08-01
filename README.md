@@ -5,7 +5,7 @@
 Visual Studio Add-In for developers who would like to execute MsBuild targets inside Visual Studio.
 The add-in analyzes the solution folders to find MsBuild project files (.proj) to get targets and then lists it to provide ability to execute them.
 
-![targets](http://i.imgur.com/1BCuNKo.png)
+![targets](https://i.imgur.com/rX79jVa.png)
 
 ## Possibilities
 1. Get solution targets.
