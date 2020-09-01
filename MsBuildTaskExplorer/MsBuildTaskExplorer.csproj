@@ -209,7 +209,7 @@
       <Version>16.6.255</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Imaging">
-      <Version>16.5.29903.186</Version>
+      <Version>16.7.30329.63</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK.Analyzers">
       <Version>16.7.9</Version>
