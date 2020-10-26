@@ -256,7 +256,7 @@
       <Version>2.0.53</Version>
     </PackageReference>
     <PackageReference Include="StreamJsonRpc">
-      <Version>2.5.46</Version>
+      <Version>2.6.121</Version>
     </PackageReference>
     <PackageReference Include="System.Net.Http">
       <Version>4.3.4</Version>
