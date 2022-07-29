@@ -239,7 +239,7 @@
       <Version>16.10.31320.204</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Threading">
-      <Version>16.10.56</Version>
+      <Version>17.2.32</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Validation">
       <Version>16.10.34</Version>
