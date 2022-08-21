@@ -212,7 +212,7 @@
       <Version>17.3.32804.24</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK.Analyzers">
-      <Version>16.10.1</Version>
+      <Version>16.10.10</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
       <Version>16.10.31321.278</Version>
