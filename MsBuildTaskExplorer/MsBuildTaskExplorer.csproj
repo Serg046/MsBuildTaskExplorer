@@ -206,7 +206,7 @@
       <Version>2.5.0.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.CoreUtility">
-      <Version>16.10.230</Version>
+      <Version>17.3.198</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Imaging">
       <Version>17.3.32804.24</Version>
