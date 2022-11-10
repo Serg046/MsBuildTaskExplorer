@@ -215,7 +215,7 @@
       <Version>16.10.10</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
-      <Version>16.10.31321.278</Version>
+      <Version>17.4.33103.184</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.Framework">
       <Version>16.7.30329.88</Version>
