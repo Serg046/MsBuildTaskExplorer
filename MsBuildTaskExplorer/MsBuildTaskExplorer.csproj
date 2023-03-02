@@ -233,7 +233,7 @@
       <Version>16.10.31321.278</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.12.0">
-      <Version>17.4.33103.184</Version>
+      <Version>17.5.33428.366</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.9.0">
       <Version>17.4.33103.184</Version>
