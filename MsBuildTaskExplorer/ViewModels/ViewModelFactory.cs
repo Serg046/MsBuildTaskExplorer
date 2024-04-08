@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using MsBuildTaskExplorer.Views;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MsBuildTaskExplorer.ViewModels
 {
@@ -15,8 +16,7 @@ namespace MsBuildTaskExplorer.ViewModels
         {
             var inpcType = typeof(T);
             Debug.Assert(Validate(inpcType), "All injected properties must be public virtual read/write allowed");
-            return (T)_proxyGenerator.CreateClassProxy(inpcType, args,
-                new InpcInterceptor(), new ExceptionInterceptor().ToInterceptor());
+            return (T)_proxyGenerator.CreateClassProxy(inpcType, args, new InpcInterceptor(), new ExceptionInterceptor());
         }
 
         internal static bool Validate(Type inpcType)
@@ -31,62 +31,24 @@ namespace MsBuildTaskExplorer.ViewModels
             return true;
         }
 
-        private class ExceptionInterceptor : IAsyncInterceptor
+        private class ExceptionInterceptor : IInterceptor
         {
-            public void InterceptSynchronous(IInvocation invocation)
+            [SuppressMessage("Usage", "VSTHRD100:Avoid async void methods")]
+            public async void Intercept(IInvocation invocation)
             {
                 try
                 {
                     invocation.Proceed();
-                }
-                catch (Exception e)
-                {
-                    new ErrorView().ShowDialog(e.ToString());
-                    ReloadApp();
-                }
-            }
-
-            public void InterceptAsynchronous(IInvocation invocation)
-            {
-                invocation.ReturnValue = InternalInterceptAsynchronous(invocation);
-            }
-
-            private async Task InternalInterceptAsynchronous(IInvocation invocation)
-            {
-                try
-                {
-                    invocation.Proceed();
-                    var task = (Task)invocation.ReturnValue;
-                    await task;
+                    if (invocation.ReturnValue is Task task)
+                    {
+                        await task;
+                    }
                 }
                 catch (Exception e)
                 {
                     new ErrorView().ShowDialog(e.ToString());
                     await ReloadApp();
                 }
-            }
-
-            public void InterceptAsynchronous<TResult>(IInvocation invocation)
-            {
-                invocation.ReturnValue = InternalInterceptAsynchronous<TResult>(invocation);
-            }
-
-            private async Task<TResult> InternalInterceptAsynchronous<TResult>(IInvocation invocation)
-            {
-                var result = default(TResult);
-                try
-                {
-                    invocation.Proceed();
-                    var task = (Task<TResult>) invocation.ReturnValue;
-                    result = await task;
-                }
-                catch (Exception e)
-                {
-                    new ErrorView().ShowDialog(e.ToString());
-                    await ReloadApp();
-                }
-
-                return result;
             }
 
             private async Task ReloadApp()

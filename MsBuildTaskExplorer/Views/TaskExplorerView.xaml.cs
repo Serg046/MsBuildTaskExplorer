@@ -8,7 +8,7 @@ namespace MsBuildTaskExplorer.Views
     {
         public TaskExplorerView()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             DataContext = ViewModelFactory.Create<TaskExplorerViewModel>();
         }
 
